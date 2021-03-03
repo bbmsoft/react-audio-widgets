@@ -20,11 +20,12 @@ function SliderEQ(props) {
     }
 
     const noop = (v, i) => { };
+
     const onFrequencyChange = props.onFrequencyChange || noop;
     const onGainChange = props.onGainChange || noop;
     const onQChange = props.onQChange || noop;
 
-    const sliderScale = linearScale(0, 100);
+    const sliderScale = linearScale(0, 1000);
     const frequencyScale = logarithmicScale(eq.minFreq, eq.maxFreq);
     const gainScale = linearScale(eq.minGain, eq.maxGain);
     const qScale = logarithmicScale(eq.minQ, eq.maxQ);
@@ -76,7 +77,7 @@ function EqSlider(props) {
                 <TextField id="outlined-basic" label={label} variant="outlined" value={value} />
             </Grid>
             <Grid item xs>
-                <Slider min={0} max={100} value={sliderValue} onChange={onChange} />
+                <Slider min={0} max={1000} value={sliderValue} onChange={onChange} />
             </Grid>
         </Grid>
     );

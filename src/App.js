@@ -45,28 +45,30 @@ function App() {
     bands: [
       {
         type: BandType.BELL,
-        gain: 6.0,
-        frequency: 400,
+        gain: 0.0,
+        frequency: 500,
+        q: 1,
+      }, {
+        type: BandType.BELL,
+        gain: 0.0,
+        frequency: 1000,
+        q: 1,
+      }, {
+        type: BandType.BELL,
+        gain: 0.0,
+        frequency: 2000,
+        q: 1,
+      }, {
+        type: BandType.BELL,
+        gain: 0.0,
+        frequency: 4000,
+        q: 1,
+      }, {
+        type: BandType.BELL,
+        gain: 0.0,
+        frequency: 8000,
         q: 1,
       },
-      {
-        type: BandType.BELL,
-        gain: -8.0,
-        frequency: 800,
-        q: 10,
-      },
-      {
-        type: BandType.BELL,
-        gain: 3.0,
-        frequency: 1600,
-        q: 3,
-      },
-      {
-        type: BandType.BELL,
-        gain: -2.0,
-        frequency: 3200,
-        q: 0.1,
-      }
     ]
   }
 
@@ -81,17 +83,8 @@ function App() {
   return (
     <div className="App">
       <EqContext.Provider value={eq}>
-        <Canvas width={800} height={400}>
-          <ParametricEQ
-            x={0}
-            y={0}
-            width={800}
-            height={400}
-            onFrequencyChange={onFrequencyChange}
-            onGainChange={onGainChange}
-            onQChange={onQChange}
-            onActiveBandChange={onActiveBandChange}
-          />
+        <Canvas width={1600} height={600}>
+          <ParametricEQ x={0} y={0} width={1600} height={600} />
         </Canvas>
         <SliderEQ
           onFrequencyChange={onFrequencyChange}
@@ -99,18 +92,6 @@ function App() {
           onQChange={onQChange}
           onActiveBandChange={onActiveBandChange}
         />
-        {/* <div>
-          <button onClick={() => setActiveBand(0)}>{"1"}</button>
-          <button onClick={() => setActiveBand(1)}>{"2"}</button>
-          <button onClick={() => setActiveBand(2)}>{"3"}</button>
-          <button onClick={() => setActiveBand(3)}>{"4"}</button>
-          <button onClick={() => setActiveBand(4)}>{"5"}</button>
-        </div>
-        <div>
-          <input type="range" min="1" max="101" onInput={sliderFreqChange} /><br />
-          <input type="range" min="1" max="101" onInput={sliderGainChange} /><br />
-          <input type="range" min="1" max="101" onInput={sliderQChange} /><br />
-        </div> */}
       </EqContext.Provider>
     </div>
   );

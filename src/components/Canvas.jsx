@@ -12,8 +12,12 @@ function Canvas(props) {
     ] = React.useState(null);
 
     React.useEffect(() => {
-        const context = canvasRef.current.getContext("2d");
-        setRenderingContext(context);
+        const canvas = canvasRef.current;
+        const context = canvas.getContext("2d");
+        setRenderingContext({
+            canvas,
+            context
+        });
     }, []);
 
     const width = props.width;

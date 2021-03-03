@@ -1,8 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useEffect } from 'react';
 import { CanvasContext } from './Canvas';
 import { linearScale, logarithmicScale } from '../scales/scales';
 import { computeBandCurve } from './eqPlotter';
-import { EqContext } from './EQ';
 
 const background = "#333";
 const bandStroke = "#f808";
@@ -78,34 +77,119 @@ function drawSum(ctx, xs, ys, y0) {
     ctx.fill();
 }
 
+function findClosestBand(eq, x, y, xMin, xMax, yMin, yMax) {
+
+    let closest = 0;
+    let shortestDistance = 999999999;
+
+    let frequencyScale = logarithmicScale(eq.minFreq, eq.maxFreq);
+    let gainScale = linearScale(eq.minGain, eq.maxGain);
+    let xScale = linearScale(xMin, xMax);
+    let yScale = linearScale(yMin, yMax, true);
+
+    for (let i = 0; i < eq.bands.length; i++) {
+        const band = eq.bands[i];
+        const bx = frequencyScale.convertTo(xScale, band.frequency);
+        const by = gainScale.convertTo(yScale, band.gain);
+        const dx = bx - (x - xMin);
+        const dy = by - (y - yMin);
+        const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+        if (distance < shortestDistance) {
+            shortestDistance = distance;
+            closest = i;
+        }
+    }
+
+    return closest;
+}
+
 function ParametricEQ(props) {
 
-    const eq = useContext(EqContext);
-    const ctx = React.useContext(CanvasContext);
+    const id = props.id;
+    const eq = props.eq;
 
-    if (ctx && eq) {
+    const canvasContext = React.useContext(CanvasContext);
 
-        const x = props.x || 0;
-        const y = props.y || 0;
-        const width = props.width || 900;
-        const height = props.height || 300;
+    if (!window.eqs) {
+        window.eqs = new Map();
+    }
+    window.eqs[id] = eq;
 
-        const xMin = x;
-        const xMax = xMin + width;
-        const yMin = y;
-        const yMax = yMin + height;
+    const x = props.x || 0;
+    const y = props.y || 0;
+    const width = props.width || 900;
+    const height = props.height || 300;
+
+    const xMin = x;
+    const xMax = xMin + width;
+    const yMin = y;
+    const yMax = yMin + height;
+
+    const maxBandCircleRadius = Math.min(Math.min(width, height) / 5, Math.max(width, height) / 20);
+    const minBandCircleRadius = maxBandCircleRadius / 5;
+
+    const frequencyScale = logarithmicScale(eq.minFreq, eq.maxFreq);
+    const gainScale = linearScale(eq.minGain, eq.maxGain);
+    const qScale = logarithmicScale(eq.minQ, eq.maxQ);
+    const xScale = linearScale(xMin, xMax);
+    const yScale = linearScale(yMin, yMax, true);
+    const circleScale = linearScale(minBandCircleRadius, maxBandCircleRadius, true);
+
+    useEffect(() => {
+
+        if (canvasContext) {
+            const { canvas } = canvasContext;
+            const noop = (v, i) => { };
+            const onUserInput = props.onUserInput || noop;
+
+            const handleMouseMove = e => {
+
+                const [lastX, lastY] = window.lastMousePosition;
+                const { clientX, clientY } = e;
+
+                const dx = clientX - lastX;
+                const dy = clientY - lastY;
+
+                window.lastMousePosition = [clientX, clientY];
+
+                const eq = { ...window.eqs[id] };
+                const band = eq.bands[eq.activeBand];
+
+                const newFrequency = xScale.applyDeltaTo(frequencyScale, dx, band.frequency);
+                const newGain = yScale.applyDeltaTo(gainScale, dy, band.gain);
+
+                band.frequency = newFrequency;
+                band.gain = newGain;
+
+                onUserInput(eq);
+            }
+
+            const handleMouseDown = e => {
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = rect.x;
+                const canvasY = rect.y;
+                const eq = { ...window.eqs[id] };
+                const closestBand = findClosestBand(window.eqs[id], e.clientX - canvasX, e.clientY - canvasY, xMin, xMax, yMin, yMax);
+                eq.activeBand = closestBand;
+                onUserInput(eq);
+                window.lastMousePosition = [e.clientX, e.clientY];
+                window.addEventListener("mousemove", handleMouseMove);
+            }
+
+            const handleMouseUp = e => {
+                window.removeEventListener("mousemove", handleMouseMove);
+            }
+
+            canvas.addEventListener("mousedown", handleMouseDown);
+            canvas.addEventListener("mouseup", handleMouseUp);
+        }
+    }, [canvasContext])
+
+    if (canvasContext && eq) {
+
+        const ctx = canvasContext.context;
 
         const minimal = props.minimal;
-
-        const maxBandCircleRadius = Math.min(Math.min(width, height) / 5, Math.max(width, height) / 20);
-        const minBandCircleRadius = maxBandCircleRadius / 5;
-
-        const frequencyScale = logarithmicScale(eq.minFreq, eq.maxFreq);
-        const gainScale = linearScale(eq.minGain, eq.maxGain);
-        const qScale = logarithmicScale(eq.minQ, eq.maxQ);
-        const xScale = linearScale(xMin, xMax);
-        const yScale = linearScale(yMin, yMax, true);
-        const circleScale = linearScale(minBandCircleRadius, maxBandCircleRadius, true);
 
         const y0 = gainScale.convertTo(yScale, 0);
 

@@ -10,6 +10,7 @@ export function linearScale(min, max, inverted) {
             return r;
         }
     };
+
     const toAbsolute = r => {
         if (inverted) {
             return min + (1.0 - r) * range;
@@ -17,15 +18,25 @@ export function linearScale(min, max, inverted) {
             return min + r * range;
         }
     };
+
     const convertTo = (otherScale, a) => {
         const ratio = toRatio(a);
         return otherScale.toAbsolute(ratio);
+    }
+
+    const applyDeltaTo = (otherScale, delta, otherCurrent) => {
+        const currentRatio = otherScale.toRatio(otherCurrent);
+        const currentAbs = toAbsolute(currentRatio);
+        const newAbs = currentAbs + delta;
+        const newRatio = toRatio(newAbs);
+        return otherScale.toAbsolute(newRatio);
     }
 
     return {
         toRatio,
         toAbsolute,
         convertTo,
+        applyDeltaTo
     }
 }
 
@@ -60,9 +71,18 @@ export function logarithmicScale(min, max, inverted) {
         return otherScale.toAbsolute(ratio);
     }
 
+    const applyDeltaTo = (otherScale, delta, otherCurrent) => {
+        const currentRatio = otherScale.toRatio(otherCurrent);
+        const currentAbs = toAbsolute(currentRatio);
+        const newAbs = currentAbs + delta;
+        const newRatio = toRatio(newAbs);
+        return otherScale.toAbsolute(newRatio);
+    }
+
     return {
         toRatio,
         toAbsolute,
         convertTo,
+        applyDeltaTo
     }
 }

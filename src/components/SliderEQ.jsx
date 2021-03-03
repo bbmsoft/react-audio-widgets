@@ -1,29 +1,30 @@
 import { Button, ButtonGroup, Grid, Slider, TextField } from '@material-ui/core';
-import React, { useContext, useState } from 'react';
-import { EqContext } from './EQ';
+import React from 'react';
 import { linearScale, logarithmicScale } from '../scales/scales';
 
 function SliderEQ(props) {
 
-    const initActiveBand = props.activeBand || 0;
+    const eq = { ...props.eq };
 
-    const eq = useContext(EqContext);
-    const [activeBand, setActiveBand] = useState(initActiveBand);
-
-    const buttons = [];
-    for (let i = 0; i < eq.bands.length; i++) {
-        if (activeBand === i) {
-            buttons.push(<Button key={i} color="primary" onClick={() => setActiveBand(i)}>{`Band ${i + 1}`}</Button>);
-        } else {
-            buttons.push(<Button key={i} onClick={() => setActiveBand(i)}>{`Band ${i + 1}`}</Button>);
-        }
-    }
+    const activeBand = eq.activeBand;
 
     const noop = (v, i) => { };
+    const onUserInput = props.onUserInput || noop;
 
-    const onFrequencyChange = props.onFrequencyChange || noop;
-    const onGainChange = props.onGainChange || noop;
-    const onQChange = props.onQChange || noop;
+    const buttons = [];
+
+    const onClick = i => {
+        eq.activeBand = i;
+        onUserInput(eq);
+    }
+
+    for (let i = 0; i < eq.bands.length; i++) {
+        if (activeBand === i) {
+            buttons.push(<Button key={i} color="primary" onClick={() => onClick(i)}>{`Band ${i + 1}`}</Button>);
+        } else {
+            buttons.push(<Button key={i} onClick={() => onClick(i)}>{`Band ${i + 1}`}</Button>);
+        }
+    }
 
     const sliderScale = linearScale(0, 1000);
     const frequencyScale = logarithmicScale(eq.minFreq, eq.maxFreq);
@@ -32,17 +33,20 @@ function SliderEQ(props) {
 
     const sliderFreqChange = (e, value) => {
         const val = sliderScale.convertTo(frequencyScale, value);
-        onFrequencyChange(val, activeBand);
+        eq.bands[activeBand].frequency = val;
+        onUserInput(eq);
     }
 
     const sliderGainChange = (e, value) => {
         const val = sliderScale.convertTo(gainScale, value);
-        onGainChange(val, activeBand);
+        eq.bands[activeBand].gain = val;
+        onUserInput(eq);
     }
 
     const sliderQChange = (e, value) => {
         const val = sliderScale.convertTo(qScale, value);
-        onQChange(val, activeBand);
+        eq.bands[activeBand].q = val;
+        onUserInput(eq);
     }
 
     const freqSliderValue = frequencyScale.convertTo(sliderScale, eq.bands[activeBand].frequency);
@@ -74,7 +78,7 @@ function EqSlider(props) {
     return (
         <Grid container spacing={2}>
             <Grid item>
-                <TextField id="outlined-basic" label={label} variant="outlined" value={value} />
+                <TextField label={label} variant="outlined" value={value} />
             </Grid>
             <Grid item xs>
                 <Slider min={0} max={1000} value={sliderValue} onChange={onChange} />

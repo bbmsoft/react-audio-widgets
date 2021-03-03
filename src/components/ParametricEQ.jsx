@@ -138,6 +138,20 @@ function ParametricEQ(props) {
 
     useEffect(() => {
 
+        if (!window.mouseUpHandlers) {
+            window.mouseUpHandlers = new Map();
+        }
+
+        return () => {
+            const mouseUpHandler = window.mouseUpHandlers[id];
+            if (mouseUpHandler) {
+                window.removeEventListener("mouseup", mouseUpHandler);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+
         if (canvasContext) {
             const { canvas } = canvasContext;
             const noop = (v, i) => { };
@@ -182,7 +196,13 @@ function ParametricEQ(props) {
             }
 
             canvas.addEventListener("mousedown", handleMouseDown);
-            canvas.addEventListener("mouseup", handleMouseUp);
+
+            const mouseUpHandler = window.mouseUpHandlers[id];
+            if (mouseUpHandler) {
+                window.removeEventListener("mouseup", mouseUpHandler);
+            }
+            window.mouseUpHandlers[id] = handleMouseUp;
+            window.addEventListener("mouseup", handleMouseUp);
         }
     }, [canvasContext])
 

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { CanvasContext } from './Canvas';
 import { linearScale, logarithmicScale } from '../scales/scales';
 import { computeBandCurve } from './eqPlotter';
+import { clamp } from './utils';
 
 const background = "#333";
 const bandStroke = "#f808";
@@ -158,8 +159,8 @@ function ParametricEQ(props) {
                 const newFrequency = xScale.applyDeltaTo(frequencyScale, dx, band.frequency);
                 const newGain = yScale.applyDeltaTo(gainScale, dy, band.gain);
 
-                band.frequency = newFrequency;
-                band.gain = newGain;
+                band.frequency = clamp(eq.minFreq, newFrequency, eq.maxFreq);
+                band.gain = clamp(eq.minGain, newGain, eq.maxGain);
 
                 onUserInput(eq);
             }

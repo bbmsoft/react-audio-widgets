@@ -4,7 +4,11 @@ import { clamp } from './utils';
 
 function CircularSlider(props) {
 
-    const { id, min, max, value, radius } = props;
+    const { id, value } = props;
+
+    const min = props.min || 0;
+    const max = props.max || 100;
+    const radius = props.radius || 25;
 
     if (!window.circSliders) {
         window.circSliders = new Map();
@@ -45,8 +49,6 @@ function CircularSlider(props) {
 
             const newVal = fadeScale.applyDeltaTo(valueScale, dy, window.circSliders[id]);
             onInput(clamp(min, newVal, max));
-
-            console.log(dx, dy);
 
             window.lastMousePosition = [clientX, clientY];
             e.preventDefault();

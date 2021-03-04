@@ -18,8 +18,8 @@ export function formatFrequency(val, withUnit) {
 }
 
 export function formatQ(val) {
-    const rounded = Math.round(val);
-    return `${rounded}`;
+    const digits = Math.max(0, 2 - Math.ceil(Math.log10(val + 0.00001)));
+    return val.toFixed(digits);
 }
 
 

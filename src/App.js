@@ -4,7 +4,7 @@ import ParametricEQ, { BandType } from './components/ParametricEQ';
 import Canvas from './components/Canvas';
 import SliderEQ from './components/SliderEQ';
 import { Button } from '@material-ui/core';
-import CircularSlider from './components/CircularSlider';
+import KnobEqBand from './components/KnobEqBand';
 
 function App() {
 
@@ -41,31 +41,49 @@ function App() {
     ]
   }
 
-  const [eq, setEq] = React.useState(initialEq);
-
-  const onUserInput = (eq) => setEq(eq);
-
-  const [slider, setSlider] = useState(50);
+  const [eq, setEq] = useState(initialEq);
 
   return (
-    <div className="App">
-      <Canvas width={1600} height={600}>
-        <ParametricEQ
+    <div className="App" style={{
+      width: "1600px",
+      margin: "0 auto",
+      left: "50%"
+    }}>
+      <div>
+        <Canvas width={1600} height={600}>
+          <ParametricEQ
+            eq={eq}
+            id="mainEq"
+            x={0}
+            y={0}
+            width={1600}
+            height={600}
+            onUserInput={setEq}
+          />
+        </Canvas>
+        <SliderEQ
           eq={eq}
-          id="mainEq"
-          x={0}
-          y={0}
-          width={1600}
-          height={600}
-          onUserInput={onUserInput}
+          onUserInput={setEq}
         />
-      </Canvas>
-      <SliderEQ
-        eq={eq}
-        onUserInput={onUserInput}
-      />
-      <Button variant="outlined" color="primary" onClick={() => setEq(initialEq)}>Reset</Button>
-      <CircularSlider min={0} max={100} radius={25} value={slider} onInput={setSlider} />
+      </div>
+      <KnobEqBands id={"knobEq"} eq={eq} onUserInput={setEq} />
+    </div>
+  );
+}
+
+function KnobEqBands(props) {
+  const { id, eq, onUserInput } = props;
+
+  const bands = [];
+  for (let i = 0; i < eq.bands.length; i++) {
+    bands.push(
+      <KnobEqBand key={i} id={`${id}-${i}`} eq={eq} band={i} onInput={onUserInput} />
+    );
+  }
+
+  return (
+    <div>
+      {bands}
     </div>
   );
 }

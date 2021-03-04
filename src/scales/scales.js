@@ -86,3 +86,26 @@ export function logarithmicScale(min, max, inverted) {
         applyDeltaTo
     }
 }
+
+export function noopScale() {
+    return {
+        toRatio: v => v,
+        toAbsolute: v => v,
+        convertTo: (other, v) => v,
+        applyDeltaTo: (other, d, c) => c + d,
+    }
+}
+
+export function scaleConverter(external, internal) {
+    return {
+        toInternal: v => external.convertTo(internal, v),
+        toExternal: v => internal.convertTo(external, v),
+    }
+}
+
+export function noopScaleConverter() {
+    return {
+        toInternal: v => v,
+        toExternal: v => v,
+    }
+}

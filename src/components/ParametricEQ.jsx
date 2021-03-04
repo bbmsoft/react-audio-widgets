@@ -176,6 +176,8 @@ function ParametricEQ(props) {
                 band.frequency = clamp(eq.minFreq, newFrequency, eq.maxFreq);
                 band.gain = clamp(eq.minGain, newGain, eq.maxGain);
 
+                e.preventDefault();
+
                 onUserInput(eq);
             }
 
@@ -189,10 +191,12 @@ function ParametricEQ(props) {
                 onUserInput(eq);
                 window.lastMousePosition = [e.clientX, e.clientY];
                 window.addEventListener("mousemove", handleMouseMove);
+                e.preventDefault();
             }
 
             const handleMouseUp = e => {
                 window.removeEventListener("mousemove", handleMouseMove);
+                e.preventDefault();
             }
 
             canvas.addEventListener("mousedown", handleMouseDown);

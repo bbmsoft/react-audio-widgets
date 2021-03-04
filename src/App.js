@@ -1,8 +1,10 @@
 import './App.css';
-import React from 'react';
+import React, { useState } from 'react';
 import ParametricEQ, { BandType } from './components/ParametricEQ';
 import Canvas from './components/Canvas';
 import SliderEQ from './components/SliderEQ';
+import { Button } from '@material-ui/core';
+import CircularSlider from './components/CircularSlider';
 
 function App() {
 
@@ -43,6 +45,8 @@ function App() {
 
   const onUserInput = (eq) => setEq(eq);
 
+  const [slider, setSlider] = useState(50);
+
   return (
     <div className="App">
       <Canvas width={1600} height={600}>
@@ -60,6 +64,8 @@ function App() {
         eq={eq}
         onUserInput={onUserInput}
       />
+      <Button variant="outlined" color="primary" onClick={() => setEq(initialEq)}>Reset</Button>
+      <CircularSlider min={0} max={100} radius={25} value={slider} onInput={setSlider} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { Button, ButtonGroup, Grid, Slider, TextField } from '@material-ui/core';
 import React from 'react';
 import { linearScale, logarithmicScale } from '../scales/scales';
+import { formatFrequency, formatGain, formatQ } from '../scales/formatters'
 
 function SliderEQ(props) {
 
@@ -53,15 +54,19 @@ function SliderEQ(props) {
     const gainSliderValue = gainScale.convertTo(sliderScale, eq.bands[activeBand].gain);
     const qSliderValue = qScale.convertTo(sliderScale, eq.bands[activeBand].q);
 
+    const frequencyLabel = formatFrequency(eq.bands[activeBand].frequency, true);
+    const gainLabel = formatGain(eq.bands[activeBand].gain, true);
+    const qLabel = formatQ(eq.bands[activeBand].q, true);
+
     return (
         <div>
             <ButtonGroup disableElevation variant="contained" >
                 {buttons}
             </ButtonGroup>
             <div>
-                <EqSlider label="Frequency" value={eq.bands[activeBand].frequency} sliderValue={freqSliderValue} onChange={sliderFreqChange} />
-                <EqSlider label="Gain" value={eq.bands[activeBand].gain} sliderValue={gainSliderValue} onChange={sliderGainChange} />
-                <EqSlider label="Q" value={eq.bands[activeBand].q} sliderValue={qSliderValue} onChange={sliderQChange} />
+                <EqSlider label="Frequency" value={frequencyLabel} sliderValue={freqSliderValue} onChange={sliderFreqChange} />
+                <EqSlider label="Gain" value={gainLabel} sliderValue={gainSliderValue} onChange={sliderGainChange} />
+                <EqSlider label="Q" value={qLabel} sliderValue={qSliderValue} onChange={sliderQChange} />
             </div>
 
         </div>

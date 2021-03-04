@@ -136,19 +136,13 @@ function ParametricEQ(props) {
     const yScale = linearScale(yMin, yMax, true);
     const circleScale = linearScale(minBandCircleRadius, maxBandCircleRadius, true);
 
-    useEffect(() => {
+    if (!window.mouseUpHandlers) {
+        window.mouseUpHandlers = new Map();
+    }
 
-        if (!window.mouseUpHandlers) {
-            window.mouseUpHandlers = new Map();
-        }
-
-        return () => {
-            const mouseUpHandler = window.mouseUpHandlers[id];
-            if (mouseUpHandler) {
-                window.removeEventListener("mouseup", mouseUpHandler);
-            }
-        }
-    }, []);
+    if (!window.mouseDownHandlers) {
+        window.mouseDownHandlers = new Map();
+    }
 
     useEffect(() => {
 
@@ -199,14 +193,26 @@ function ParametricEQ(props) {
                 e.preventDefault();
             }
 
-            canvas.addEventListener("mousedown", handleMouseDown);
-
             const mouseUpHandler = window.mouseUpHandlers[id];
             if (mouseUpHandler) {
                 window.removeEventListener("mouseup", mouseUpHandler);
             }
             window.mouseUpHandlers[id] = handleMouseUp;
+
+            const mouseDownHandler = window.mouseDownHandlers[id];
+            if (mouseDownHandler) {
+                canvas.removeEventListener("mousedown", mouseDownHandler);
+            }
+            window.mouseDownHandlers[id] = handleMouseDown;
+
             window.addEventListener("mouseup", handleMouseUp);
+            canvas.addEventListener("mousedown", handleMouseDown);
+        }
+        return () => {
+            const mouseUpHandler = window.mouseUpHandlers[id];
+            if (mouseUpHandler) {
+                window.removeEventListener("mouseup", mouseUpHandler);
+            }
         }
     }, [canvasContext])
 

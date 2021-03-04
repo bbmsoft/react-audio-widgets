@@ -75,8 +75,8 @@ function CircularSlider(props) {
         <svg height={height} width={width} ref={ref}>
             <defs>
                 <radialGradient id="grad">
-                    <stop offset="10%" stop-color="#555" />
-                    <stop offset="95%" stop-color="#000" />
+                    <stop offset="10%" stopColor="#555" />
+                    <stop offset="95%" stopColor="#000" />
                 </radialGradient>
             </defs>
             <circle cx={radius} cy={radius} r={radius} fill="url('#grad')" />

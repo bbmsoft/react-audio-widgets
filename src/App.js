@@ -117,6 +117,29 @@ function App() {
   }, []);
 
   const width = 1600;
+  const height = 500;
+
+  const mainEqHeight = 400;
+
+  const noOfMinis = 8;
+  const minis = [];
+  const miniEqWidth = width / noOfMinis;
+  const miniEqHeight = height - mainEqHeight;
+  const padding = 20;
+  for (let i = 0; i < noOfMinis; i++) {
+    minis.push(
+      <ParametricEQ
+        key={i}
+        eq={eq}
+        id={`miniEq-${i}`}
+        x={i * miniEqWidth + padding}
+        y={mainEqHeight + padding}
+        width={miniEqWidth - 2 * padding}
+        height={miniEqHeight - 2 * padding}
+        minimal={true}
+      />
+    );
+  }
 
   return (
     <div className="App" style={{
@@ -125,16 +148,17 @@ function App() {
       left: "50%"
     }}>
       <div>
-        <Canvas width={width} height={500}>
+        <Canvas width={width} height={height}>
           <ParametricEQ
             eq={eq}
             id="mainEq"
             x={0}
             y={0}
             width={width}
-            height={500}
+            height={mainEqHeight}
             onUserInput={onInput}
           />
+          {minis}
         </Canvas>
         <SliderEQ
           eq={eq}

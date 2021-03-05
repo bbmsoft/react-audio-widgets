@@ -229,9 +229,15 @@ function ParametricEQ(props) {
 
         let sum;
 
-        ctx.clearRect(xMin, yMin, xMax, yMax);
+        ctx.clearRect(xMin, yMin, width, height);
+
+        ctx.save();
+        let clip = new Path2D();
+        clip.rect(xMin, yMin, width, height);
+        ctx.clip(clip);
+
         ctx.fillStyle = background;
-        ctx.fillRect(xMin, yMin, xMax, yMax);
+        ctx.fillRect(xMin, yMin, width, height);
 
         eq.bands.forEach(b => {
             const gains = computeBandCurve(b, frequencies);
@@ -248,6 +254,8 @@ function ParametricEQ(props) {
 
         const ys = sum.map(g => gainScale.convertTo(yScale, g));
         drawSum(ctx, xs, ys, y0);
+
+        ctx.restore();
     }
 
     return null;

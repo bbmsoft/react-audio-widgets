@@ -18,7 +18,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "docker-build": "docker build -t babymotte/react-audio-widgets-demo .",
-    "docker-push": "docker push babymotte/react-audio-widgets-demo"
+    "docker-push": "docker push babymotte/react-audio-widgets-demo",
+    "update": "docker-compose pull && docker-compose up -d --remove-orphans"
   },
   "eslintConfig": {
     "extends": [

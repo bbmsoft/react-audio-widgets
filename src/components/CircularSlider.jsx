@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { linearScale } from '../scales/scales';
-import { clamp } from './utils';
+import { clamped, linearScale } from '../scales/scales';
 
 function CircularSlider(props) {
 
@@ -25,7 +24,7 @@ function CircularSlider(props) {
     const rectHeight = radius / 1.8;
     const rectX = radius - rectWidth / 2;
 
-    let valueScale = linearScale(min, max);
+    let valueScale = clamped(linearScale(min, max));
     let angleScale = linearScale(-135, 135);
     let angle = valueScale.convertTo(angleScale, value)
 
@@ -48,7 +47,7 @@ function CircularSlider(props) {
             const dy = clientY - lastY;
 
             const newVal = fadeScale.applyDeltaTo(valueScale, dy, window.circSliders[id]);
-            onInput(clamp(min, newVal, max));
+            onInput(newVal);
 
             window.lastMousePosition = [clientX, clientY];
             e.preventDefault();

@@ -1,3 +1,35 @@
+
+export function clamped(scale) {
+    const { min, max, toRatio, toAbsolute } = scale;
+
+    return {
+        ...scale,
+        toRatio: v => clampedToRatio(v, toRatio),
+        toAbsolute: r => clampedToAbsolute(r, min, max, toAbsolute),
+    }
+}
+
+function clampedToRatio(value, toRatio) {
+    return Math.max(0.0, Math.min(toRatio(value), 1.0));
+}
+
+function clampedToAbsolute(ratio, min, max, toAbsolute) {
+    return Math.max(min, Math.min(toAbsolute(ratio), max));
+}
+
+function convertScaleTo(otherScale, a, toRatio) {
+    const ratio = toRatio(a);
+    return otherScale.toAbsolute(ratio);
+}
+
+function applyDeltaToScale(otherScale, delta, otherCurrent, toAbsolute, toRatio) {
+    const currentRatio = otherScale.toRatio(otherCurrent);
+    const currentAbs = toAbsolute(currentRatio);
+    const newAbs = currentAbs + delta;
+    const newRatio = toRatio(newAbs);
+    return otherScale.toAbsolute(newRatio);
+}
+
 export function linearScale(min, max, inverted) {
 
     const range = (max - min);
@@ -20,19 +52,16 @@ export function linearScale(min, max, inverted) {
     };
 
     const convertTo = (otherScale, a) => {
-        const ratio = toRatio(a);
-        return otherScale.toAbsolute(ratio);
+        return convertScaleTo(otherScale, a, toRatio);
     }
 
     const applyDeltaTo = (otherScale, delta, otherCurrent) => {
-        const currentRatio = otherScale.toRatio(otherCurrent);
-        const currentAbs = toAbsolute(currentRatio);
-        const newAbs = currentAbs + delta;
-        const newRatio = toRatio(newAbs);
-        return otherScale.toAbsolute(newRatio);
+        return applyDeltaToScale(otherScale, delta, otherCurrent, toAbsolute, toRatio);
     }
 
     return {
+        min,
+        max,
         toRatio,
         toAbsolute,
         convertTo,
@@ -67,19 +96,16 @@ export function logarithmicScale(min, max, inverted) {
     };
 
     const convertTo = (otherScale, a) => {
-        const ratio = toRatio(a);
-        return otherScale.toAbsolute(ratio);
+        return convertScaleTo(otherScale, a, toRatio);
     }
 
     const applyDeltaTo = (otherScale, delta, otherCurrent) => {
-        const currentRatio = otherScale.toRatio(otherCurrent);
-        const currentAbs = toAbsolute(currentRatio);
-        const newAbs = currentAbs + delta;
-        const newRatio = toRatio(newAbs);
-        return otherScale.toAbsolute(newRatio);
+        return applyDeltaToScale(otherScale, delta, otherCurrent, toAbsolute, toRatio);
     }
 
     return {
+        min,
+        max,
         toRatio,
         toAbsolute,
         convertTo,
@@ -96,10 +122,10 @@ export function noopScale() {
     }
 }
 
-export function scaleConverter(external, internal) {
+export function uiConverter(valueScale, uiScale) {
     return {
-        toInternal: v => external.convertTo(internal, v),
-        toExternal: v => internal.convertTo(external, v),
+        toValue: v => uiScale.convertTo(valueScale, v),
+        toUiCoordinates: v => valueScale.convertTo(uiScale, v),
     }
 }
 

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { CanvasContext } from './Canvas';
-import { linearScale, logarithmicScale } from '../scales/scales';
-import { clamp } from './utils';
+import { clamped, linearScale, logarithmicScale } from '../scales/scales';
 import * as eqtils from './eqtils';
 
 const background = "#333";
@@ -33,9 +32,9 @@ function ParametricEQ(props) {
     const maxBandCircleRadius = Math.min(Math.min(width, height) / 5, Math.max(width, height) / 20);
     const minBandCircleRadius = maxBandCircleRadius / 5;
 
-    const frequencyScale = logarithmicScale(eq.minFreq, eq.maxFreq);
-    const gainScale = linearScale(eq.minGain, eq.maxGain);
-    const qScale = logarithmicScale(eq.minQ, eq.maxQ);
+    const frequencyScale = clamped(logarithmicScale(eq.minFreq, eq.maxFreq));
+    const gainScale = clamped(linearScale(eq.minGain, eq.maxGain));
+    const qScale = clamped(logarithmicScale(eq.minQ, eq.maxQ));
     const xScale = linearScale(xMin, xMax);
     const yScale = linearScale(yMin, yMax, true);
     const circleScale = linearScale(minBandCircleRadius, maxBandCircleRadius, true);
@@ -71,8 +70,8 @@ function ParametricEQ(props) {
                 const newFrequency = xScale.applyDeltaTo(frequencyScale, dx, band.frequency);
                 const newGain = yScale.applyDeltaTo(gainScale, dy, band.gain);
 
-                band.frequency = clamp(eq.minFreq, newFrequency, eq.maxFreq);
-                band.gain = clamp(eq.minGain, newGain, eq.maxGain);
+                band.frequency = newFrequency;
+                band.gain = newGain;
 
                 e.preventDefault();
 

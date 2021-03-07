@@ -1,9 +1,8 @@
 import { Card } from '@material-ui/core';
 import React from 'react';
 import { formatFrequency, formatGain, formatQ } from '../scales/formatters';
-import { linearScale, logarithmicScale, scaleConverter } from '../scales/scales';
+import { clamped, linearScale, logarithmicScale, uiConverter } from '../scales/scales';
 import LabelledCircularSlider from './LabelledCircularSlider';
-import { clamp } from './utils';
 
 function KnobEqBand(props) {
 
@@ -14,18 +13,18 @@ function KnobEqBand(props) {
     const min = 0;
     const max = 100;
 
-    const knobScale = linearScale(min, max);
-    const freqScale = logarithmicScale(eq.minFreq, eq.maxFreq);
-    const gainScale = linearScale(eq.minGain, eq.maxGain);
-    const qScale = logarithmicScale(eq.minQ, eq.maxQ);
+    const knobScale = clamped(linearScale(min, max));
+    const freqScale = clamped(logarithmicScale(eq.minFreq, eq.maxFreq));
+    const gainScale = clamped(linearScale(eq.minGain, eq.maxGain));
+    const qScale = clamped(logarithmicScale(eq.minQ, eq.maxQ));
 
     const frequency = eq.bands[band].frequency;
     const gain = eq.bands[band].gain;
     const q = eq.bands[band].q;
 
-    const fconv = scaleConverter(freqScale, knobScale);
-    const gconv = scaleConverter(gainScale, knobScale);
-    const qconv = scaleConverter(qScale, knobScale);
+    const fconv = uiConverter(freqScale, knobScale);
+    const gconv = uiConverter(gainScale, knobScale);
+    const qconv = uiConverter(qScale, knobScale);
 
     const freqFormatter = v => formatFrequency(v, true);
     const gainFormatter = v => formatGain(v, true);
@@ -33,21 +32,21 @@ function KnobEqBand(props) {
 
     const onFreqInput = v => {
         const newEq = { ...eq };
-        newEq.bands[band].frequency = clamp(newEq.minFreq, v, newEq.maxFreq);
+        newEq.bands[band].frequency = v;
         newEq.activeBand = band;
         onInput(newEq);
     };
 
     const onGainInput = v => {
         const newEq = { ...eq };
-        newEq.bands[band].gain = clamp(newEq.minGain, v, newEq.maxGain);
+        newEq.bands[band].gain = v;
         newEq.activeBand = band;
         onInput(newEq);
     };
 
     const onQInput = v => {
         const newEq = { ...eq };
-        newEq.bands[band].q = clamp(newEq.minQ, v, newEq.maxQ);
+        newEq.bands[band].q = q;
         newEq.activeBand = band;
         onInput(newEq);
     };

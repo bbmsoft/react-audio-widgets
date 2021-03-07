@@ -5,6 +5,21 @@ import { formatFrequency, formatGain, formatQ } from '../scales/formatters'
 
 function SliderEQ(props) {
 
+    if (!props.eq) {
+        return (
+            <div>
+                <ButtonGroup disableElevation variant="contained" >
+                    <Button>No Bands</Button>
+                </ButtonGroup>
+                <div>
+                    <EqSlider label="Frequency" value={""} sliderValue={0} />
+                    <EqSlider label="Gain" value={""} sliderValue={0} />
+                    <EqSlider label="Q" value={""} sliderValue={0} />
+                </div>
+            </div>
+        );
+    }
+
     const eq = { ...props.eq };
 
     const activeBand = eq.activeBand;

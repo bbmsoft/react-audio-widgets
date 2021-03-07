@@ -1,7 +1,6 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
 import ParametricEQ from './components/ParametricEQ';
-import { BandType } from './components/eqtils';
 import Canvas from './components/Canvas';
 import SliderEQ from './components/SliderEQ';
 import { Button } from '@material-ui/core';
@@ -9,39 +8,6 @@ import KnobEqBand from './components/KnobEqBand';
 
 const BACKEND_ADDRESS = "ws://bbmsoft.net:9021/";
 // const BACKEND_ADDRESS = "ws://localhost:9021/";
-
-const INITIAL_EQ = {
-  minFreq: 200,
-  maxFreq: 24000,
-  minGain: -12.0,
-  maxGain: 12.0,
-  minQ: 0.1,
-  maxQ: 100.0,
-  activeBand: 0,
-  bands: [
-    {
-      type: BandType.BELL,
-      gain: 0.0,
-      frequency: 400,
-      q: 1,
-    }, {
-      type: BandType.BELL,
-      gain: 0.0,
-      frequency: 1200,
-      q: 1,
-    }, {
-      type: BandType.BELL,
-      gain: 0.0,
-      frequency: 3600,
-      q: 1,
-    }, {
-      type: BandType.BELL,
-      gain: 0.0,
-      frequency: 10800,
-      q: 1,
-    }
-  ]
-}
 
 function connectToWs(updateEq, setWS) {
   let socket = new WebSocket(BACKEND_ADDRESS);
@@ -73,14 +39,14 @@ function connectToWs(updateEq, setWS) {
 
 function App() {
 
-  const [eq, setEq] = useState(INITIAL_EQ);
+  const [eq, setEq] = useState(null);
   const [ws, setWS] = useState(null);
 
   window.localEq = eq;
   window.ws = ws;
 
   const eqReceived = receivedEq => {
-    const newEq = { ...receivedEq, activeBand: window.localEq.activeBand };
+    const newEq = { ...receivedEq, activeBand: window.localEq?.activeBand || 0 };
     if (window.inputLocked) {
       window.remoteEq = newEq;
     } else {
@@ -151,10 +117,13 @@ function App() {
   }
 
   const bands = [];
-  for (let i = 0; i < eq.bands.length; i++) {
-    bands.push(
-      <KnobEqBand key={i} eq={eq} band={i} onInput={onInput} />
-    );
+
+  if (eq && eq.bands) {
+    for (let i = 0; i < eq.bands.length; i++) {
+      bands.push(
+        <KnobEqBand key={i} eq={eq} band={i} onInput={onInput} />
+      );
+    }
   }
 
   return (

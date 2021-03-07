@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { clamped, linearScale, uiConverter } from '../scales/scales';
-import { useOnDragY } from './gestureHandler';
+import { handleDragY } from './gestureHandler';
 import * as uuid from 'uuid';
 
 
@@ -32,11 +32,11 @@ function CircularSlider(props) {
 
     const fadeHeight = 400;
     const fadeScale = linearScale(0, fadeHeight, true);
-
-    useOnDragY(ref, value, onInput, uiConverter(valueScale, fadeScale));
+    const converter = uiConverter(valueScale, fadeScale);
+    handleDragY(id.current, ref, value, onInput, converter);
 
     return (
-        <svg id={id.current} height={height} width={width} ref={ref}>
+        <svg height={height} width={width} ref={ref}>
             <defs>
                 <radialGradient id="grad">
                     <stop offset="10%" stopColor="#555" />

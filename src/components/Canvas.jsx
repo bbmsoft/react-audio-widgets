@@ -24,11 +24,10 @@ function Canvas(props) {
     const width = props.width;
     const height = props.height;
 
-    const id = useRef(uuid.v4());
 
     return (
         <CanvasContext.Provider value={renderingContext}>
-            <canvas id={id.current} width={width} height={height} ref={canvasRef} />
+            <canvas width={width} height={height} ref={canvasRef} />
             {props.children}
         </CanvasContext.Provider>
     );

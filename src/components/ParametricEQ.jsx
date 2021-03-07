@@ -19,7 +19,7 @@ function ParametricEQ(props) {
     }
 
     const eq = { ...props.eq };
-    const onInput = props.onInput || ((v, i) => { });
+    const onInput = props.onInput;
     const x = props.x || 0;
     const y = props.y || 0;
     const width = props.width || 900;
@@ -44,7 +44,7 @@ function ParametricEQ(props) {
     const gain = eq.bands[activeBand].gain;
     const bounds = { xMin, yMin, xMax, yMax };
 
-    if (!minimal) {
+    if (onInput && !minimal) {
         const onMouseDown = (x, y, eq) => {
             const band = eqtils.findClosestBand(eq, x, y, xMin, xMax, yMin, yMax);
             eq.activeBand = band;

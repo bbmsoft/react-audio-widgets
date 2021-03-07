@@ -20,7 +20,7 @@
     "eject": "react-scripts eject",
     "docker-build": "docker build -t babymotte/react-audio-widgets-demo .",
     "docker-push": "docker push babymotte/react-audio-widgets-demo",
-    "deploy": "rm -r build && npm run build && npm run docker-build && npm run docker-push",
+    "deploy": "rm -r build && npm run build && npm run docker-build && npm run docker-push && ssh bbmsoft.net 'cd react-audio-widgets && npm run update'",
     "update": "docker-compose pull && docker-compose up -d --remove-orphans"
   },
   "eslintConfig": {

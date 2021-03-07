@@ -8,6 +8,7 @@ import { Button } from '@material-ui/core';
 import KnobEqBand from './components/KnobEqBand';
 
 const BACKEND_ADDRESS = "ws://bbmsoft.net:9021/";
+// const BACKEND_ADDRESS = "ws://localhost:9021/";
 
 const INITIAL_EQ = {
   minFreq: 200,
@@ -99,7 +100,7 @@ function App() {
         setEq(window.remoteEq);
         window.remoteEq = null;
       }
-    }, 1000);
+    }, 200);
 
     window.inputLocked = true;
 
@@ -108,12 +109,19 @@ function App() {
     if (!window.sendPending) {
       window.sendPending = setTimeout(() => {
         window.sendPending = null;
-        window.ws && window.ws.send(JSON.stringify(window.localEq));
+        window.ws && window.ws.send(JSON.stringify({ eqUpdate: window.localEq }));
       }, 17);
     }
   };
 
+  const reset = () => {
+    if (window.ws) {
+      window.ws.send(JSON.stringify("reset"));
+    }
+  }
+
   useEffect(() => {
+    window.inputLocked = false;
     connectToWs(eqReceived, setWS);
   }, []);
 
@@ -167,7 +175,7 @@ function App() {
         />
       </div>
       <KnobEqBands id={"knobEq"} eq={eq} onUserInput={onInput} />
-      <div><Button variant="contained" onClick={() => onInput(INITIAL_EQ)}>Reset</Button></div>
+      <div><Button variant="contained" onClick={reset}>Reset</Button></div>
     </div>
   );
 }

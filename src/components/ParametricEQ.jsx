@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
 import { CanvasContext } from './Canvas';
-import { clamped, linearScale, logarithmicScale } from '../scales/scales';
+import { clamped, linearScale, logarithmicScale, uiConverter } from '../scales/scales';
 import * as eqtils from './eqtils';
-import { GestureContext } from './gestureHandler';
+import { useOnDragXY, useOnMouseDown } from './gestureHandler';
+import { useContext } from 'react';
 
 const background = "#333";
 const bandStroke = "#f808";
@@ -10,17 +10,10 @@ const sumStroke = "#f80";
 
 function ParametricEQ(props) {
 
-    const id = props.id;
-    const eq = props.eq;
+    const canvasContext = useContext(CanvasContext);
 
-    const canvasContext = React.useContext(CanvasContext);
-    // const gestureContext = React.useContext(GestureContext);
-
-    if (!window.eqs) {
-        window.eqs = new Map();
-    }
-    window.eqs[id] = eq;
-
+    const eq = { ...props.eq };
+    const onInput = props.onInput || ((v, i) => { });
     const x = props.x || 0;
     const y = props.y || 0;
     const width = props.width || 900;
@@ -36,86 +29,28 @@ function ParametricEQ(props) {
     const xScale = linearScale(xMin, xMax);
     const yScale = linearScale(yMin, yMax, true);
 
-    if (!window.mouseUpHandlers) {
-        window.mouseUpHandlers = new Map();
+    const xConverter = uiConverter(frequencyScale, xScale);
+    const yConverter = uiConverter(gainScale, yScale);
+
+    const activeBand = eq.activeBand;
+    const freq = eq.bands[activeBand].frequency;
+    const gain = eq.bands[activeBand].gain;
+
+    const onMouseDown = (x, y) => {
+        const band = eqtils.findClosestBand(eq, x, y, xMin, xMax, yMin, yMax);
+        eq.activeBand = band;
+        onInput(eq);
     }
+    useOnMouseDown(canvasContext.canvasRef, onMouseDown);
 
-    if (!window.mouseDownHandlers) {
-        window.mouseDownHandlers = new Map();
+    const onDrag = ([newFrequency, newGain, activeBand]) => {
+        eq.bands[activeBand].frequency = newFrequency;
+        eq.bands[activeBand].gain = newGain;
+        onInput(eq);
     }
+    useOnDragXY(canvasContext.canvasRef, [freq, gain, activeBand], onDrag, [xConverter, yConverter]);
 
-    useEffect(() => {
-
-        if (canvasContext) {
-            const { canvas } = canvasContext;
-            const onInput = props.onInput || ((v, i) => { });
-
-            const handleMouseMove = e => {
-
-                const [lastX, lastY] = window.lastMousePosition;
-                const { clientX, clientY } = e;
-
-                const dx = clientX - lastX;
-                const dy = clientY - lastY;
-
-                window.lastMousePosition = [clientX, clientY];
-
-                const eq = { ...window.eqs[id] };
-                const band = eq.bands[eq.activeBand];
-
-                const newFrequency = xScale.applyDeltaTo(frequencyScale, dx, band.frequency);
-                const newGain = yScale.applyDeltaTo(gainScale, dy, band.gain);
-
-                band.frequency = newFrequency;
-                band.gain = newGain;
-
-                e.preventDefault();
-
-                onInput(eq);
-            }
-
-            const handleMouseDown = e => {
-                const rect = canvas.getBoundingClientRect();
-                const canvasX = rect.x;
-                const canvasY = rect.y;
-                const eq = { ...window.eqs[id] };
-                const closestBand = eqtils.findClosestBand(window.eqs[id], e.clientX - canvasX, e.clientY - canvasY, xMin, xMax, yMin, yMax);
-                eq.activeBand = closestBand;
-                onInput(eq);
-                window.lastMousePosition = [e.clientX, e.clientY];
-                window.addEventListener("mousemove", handleMouseMove);
-                e.preventDefault();
-            }
-
-            const handleMouseUp = e => {
-                window.removeEventListener("mousemove", handleMouseMove);
-                e.preventDefault();
-            }
-
-            const mouseUpHandler = window.mouseUpHandlers[id];
-            if (mouseUpHandler) {
-                window.removeEventListener("mouseup", mouseUpHandler);
-            }
-            window.mouseUpHandlers[id] = handleMouseUp;
-
-            const mouseDownHandler = window.mouseDownHandlers[id];
-            if (mouseDownHandler) {
-                canvas.removeEventListener("mousedown", mouseDownHandler);
-            }
-            window.mouseDownHandlers[id] = handleMouseDown;
-
-            window.addEventListener("mouseup", handleMouseUp);
-            canvas.addEventListener("mousedown", handleMouseDown);
-        }
-        return () => {
-            const mouseUpHandler = window.mouseUpHandlers[id];
-            if (mouseUpHandler) {
-                window.removeEventListener("mouseup", mouseUpHandler);
-            }
-        }
-    }, [canvasContext])
-
-    if (canvasContext && eq) {
+    if (canvasContext.context) {
         const ctx = canvasContext.context;
         const minimal = props.minimal;
         const style = { background, bandStroke, sumStroke };
@@ -126,5 +61,3 @@ function ParametricEQ(props) {
 }
 
 export default ParametricEQ;
-
-

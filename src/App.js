@@ -1,6 +1,7 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
-import ParametricEQ, { BandType } from './components/ParametricEQ';
+import ParametricEQ from './components/ParametricEQ';
+import { BandType } from './components/eqtils';
 import Canvas from './components/Canvas';
 import SliderEQ from './components/SliderEQ';
 import { Button } from '@material-ui/core';

@@ -45,19 +45,19 @@ function ParametricEQ(props) {
     const bounds = { xMin, yMin, xMax, yMax };
 
     if (onInput && !minimal) {
-        const onMouseDown = (x, y, eq) => {
+        const onMouseDown = (x, y) => {
             const band = eqtils.findClosestBand(eq, x, y, xMin, xMax, yMin, yMax);
             eq.activeBand = band;
             onInput(eq);
         }
-        handleMouseDown(id.current, canvasContext.canvasRef, onMouseDown, bounds, eq);
+        handleMouseDown(id.current, canvasContext.canvasRef, onMouseDown, bounds);
 
-        const onDrag = ([newFrequency, newGain], eq) => {
+        const onDrag = (newFrequency, newGain) => {
             eq.bands[eq.activeBand].frequency = newFrequency;
             eq.bands[eq.activeBand].gain = newGain;
             onInput(eq);
         }
-        handleDragXY(id.current, canvasContext.canvasRef, [freq, gain], onDrag, [xConverter, yConverter], bounds, eq);
+        handleDragXY(id.current, canvasContext.canvasRef, [freq, gain], onDrag, [xConverter, yConverter], bounds);
     }
 
     if (canvasContext.context) {

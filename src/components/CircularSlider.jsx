@@ -12,8 +12,7 @@ function CircularSlider(props) {
     const max = props.max || 100;
     const radius = props.radius || 25;
 
-    const noop = () => { };
-    const onInput = props.onInput || noop;
+    const onInput = props.onInput;
 
     const height = 2 * radius;
     const width = 2 * radius;
@@ -30,10 +29,13 @@ function CircularSlider(props) {
     const ref = useRef(null);
     const id = useRef(uuid.v4());
 
-    const fadeHeight = 400;
-    const fadeScale = linearScale(0, fadeHeight, true);
-    const converter = uiConverter(valueScale, fadeScale);
-    handleDragY(id.current, ref, value, onInput, converter);
+    if (onInput) {
+        const fadeHeight = 400;
+        const fadeScale = linearScale(0, fadeHeight, true);
+        const converter = uiConverter(valueScale, fadeScale);
+        handleDragY(id.current, ref, value, onInput, converter);
+    }
+
 
     return (
         <svg height={height} width={width} ref={ref}>

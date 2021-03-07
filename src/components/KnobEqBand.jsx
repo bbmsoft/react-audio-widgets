@@ -6,7 +6,9 @@ import LabelledCircularSlider from './LabelledCircularSlider';
 
 function KnobEqBand(props) {
 
-    const { band, eq, id } = props;
+    const eq = { ...props.eq };
+
+    const band = props.band;
 
     const onInput = props.onInput || (v => { });
 
@@ -31,31 +33,28 @@ function KnobEqBand(props) {
     const qFormatter = v => formatQ(v, true);
 
     const onFreqInput = v => {
-        const newEq = { ...eq };
-        newEq.bands[band].frequency = v;
-        newEq.activeBand = band;
-        onInput(newEq);
+        eq.bands[band].frequency = v;
+        eq.activeBand = band;
+        onInput(eq);
     };
 
     const onGainInput = v => {
-        const newEq = { ...eq };
-        newEq.bands[band].gain = v;
-        newEq.activeBand = band;
-        onInput(newEq);
+        eq.bands[band].gain = v;
+        eq.activeBand = band;
+        onInput(eq);
     };
 
     const onQInput = v => {
-        const newEq = { ...eq };
-        newEq.bands[band].q = v;
-        newEq.activeBand = band;
-        onInput(newEq);
+        eq.bands[band].q = v;
+        eq.activeBand = band;
+        onInput(eq);
     };
 
     return (
         <Card style={{ display: "inline-block", padding: "1em", margin: "1em" }}>
-            <LabelledCircularSlider id={`${id}-freq`} min={min} max={max} label="Frequency" value={frequency} converter={fconv} formatter={freqFormatter} onInput={onFreqInput} />
-            <LabelledCircularSlider id={`${id}-gain`} min={min} max={max} label="Gain" value={gain} converter={gconv} formatter={gainFormatter} onInput={onGainInput} />
-            <LabelledCircularSlider id={`${id}-q`} min={min} max={max} label="Q" value={q} converter={qconv} formatter={qFormatter} onInput={onQInput} />
+            <LabelledCircularSlider min={min} max={max} label="Frequency" value={frequency} converter={fconv} formatter={freqFormatter} onInput={onFreqInput} />
+            <LabelledCircularSlider min={min} max={max} label="Gain" value={gain} converter={gconv} formatter={gainFormatter} onInput={onGainInput} />
+            <LabelledCircularSlider min={min} max={max} label="Q" value={q} converter={qconv} formatter={qFormatter} onInput={onQInput} />
         </Card >
     );
 }

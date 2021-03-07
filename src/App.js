@@ -150,6 +150,13 @@ function App() {
     );
   }
 
+  const bands = [];
+  for (let i = 0; i < eq.bands.length; i++) {
+    bands.push(
+      <KnobEqBand key={i} eq={eq} band={i} onInput={onInput} />
+    );
+  }
+
   return (
     <div className="App" style={{
       width: `${width}px`,
@@ -165,36 +172,20 @@ function App() {
             y={0}
             width={width}
             height={mainEqHeight}
-            onUserInput={onInput}
+            onInput={onInput}
           />
           {minis}
         </Canvas>
         <SliderEQ
           eq={eq}
-          onUserInput={onInput}
+          onInput={onInput}
         />
       </div>
-      <KnobEqBands id={"knobEq"} eq={eq} onUserInput={onInput} />
+      {bands}
       <div><Button variant="contained" onClick={reset}>Reset</Button></div>
     </div>
   );
 }
 
-function KnobEqBands(props) {
-  const { id, eq, onUserInput } = props;
-
-  const bands = [];
-  for (let i = 0; i < eq.bands.length; i++) {
-    bands.push(
-      <KnobEqBand key={i} id={`${id}-${i}`} eq={eq} band={i} onInput={onUserInput} />
-    );
-  }
-
-  return (
-    <div>
-      {bands}
-    </div>
-  );
-}
 
 export default App;

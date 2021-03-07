@@ -31,15 +31,10 @@ function ParametricEQ(props) {
     const yMin = y;
     const yMax = yMin + height;
 
-    const maxBandCircleRadius = Math.min(Math.min(width, height) / 5, Math.max(width, height) / 20);
-    const minBandCircleRadius = maxBandCircleRadius / 5;
-
     const frequencyScale = clamped(logarithmicScale(eq.minFreq, eq.maxFreq));
     const gainScale = clamped(linearScale(eq.minGain, eq.maxGain));
-    const qScale = clamped(logarithmicScale(eq.minQ, eq.maxQ));
     const xScale = linearScale(xMin, xMax);
     const yScale = linearScale(yMin, yMax, true);
-    const circleScale = linearScale(minBandCircleRadius, maxBandCircleRadius, true);
 
     if (!window.mouseUpHandlers) {
         window.mouseUpHandlers = new Map();
@@ -53,8 +48,7 @@ function ParametricEQ(props) {
 
         if (canvasContext) {
             const { canvas } = canvasContext;
-            const noop = (v, i) => { };
-            const onUserInput = props.onUserInput || noop;
+            const onInput = props.onInput || ((v, i) => { });
 
             const handleMouseMove = e => {
 
@@ -77,7 +71,7 @@ function ParametricEQ(props) {
 
                 e.preventDefault();
 
-                onUserInput(eq);
+                onInput(eq);
             }
 
             const handleMouseDown = e => {
@@ -87,7 +81,7 @@ function ParametricEQ(props) {
                 const eq = { ...window.eqs[id] };
                 const closestBand = eqtils.findClosestBand(window.eqs[id], e.clientX - canvasX, e.clientY - canvasY, xMin, xMax, yMin, yMax);
                 eq.activeBand = closestBand;
-                onUserInput(eq);
+                onInput(eq);
                 window.lastMousePosition = [e.clientX, e.clientY];
                 window.addEventListener("mousemove", handleMouseMove);
                 e.preventDefault();

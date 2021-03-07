@@ -9,14 +9,13 @@ function SliderEQ(props) {
 
     const activeBand = eq.activeBand;
 
-    const noop = (v, i) => { };
-    const onUserInput = props.onUserInput || noop;
+    const onInput = props.onInput || ((v, i) => { });
 
     const buttons = [];
 
     const onClick = i => {
         eq.activeBand = i;
-        onUserInput(eq);
+        onInput(eq);
     }
 
     for (let i = 0; i < eq.bands.length; i++) {
@@ -35,19 +34,19 @@ function SliderEQ(props) {
     const sliderFreqChange = (e, value) => {
         const val = sliderScale.convertTo(frequencyScale, value);
         eq.bands[activeBand].frequency = val;
-        onUserInput(eq);
+        onInput(eq);
     }
 
     const sliderGainChange = (e, value) => {
         const val = sliderScale.convertTo(gainScale, value);
         eq.bands[activeBand].gain = val;
-        onUserInput(eq);
+        onInput(eq);
     }
 
     const sliderQChange = (e, value) => {
         const val = sliderScale.convertTo(qScale, value);
         eq.bands[activeBand].q = val;
-        onUserInput(eq);
+        onInput(eq);
     }
 
     const freqSliderValue = frequencyScale.convertTo(sliderScale, eq.bands[activeBand].frequency);

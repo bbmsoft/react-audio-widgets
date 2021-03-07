@@ -125,7 +125,7 @@ export function noopScale() {
 export function uiConverter(valueScale, uiScale) {
     return {
         toValue: v => uiScale.convertTo(valueScale, v),
-        toUiCoordinates: v => valueScale.convertTo(uiScale, v),
+        toUiCoordinate: v => valueScale.convertTo(uiScale, v),
     }
 }
 

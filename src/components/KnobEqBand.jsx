@@ -46,7 +46,7 @@ function KnobEqBand(props) {
 
     const onQInput = v => {
         const newEq = { ...eq };
-        newEq.bands[band].q = q;
+        newEq.bands[band].q = v;
         newEq.activeBand = band;
         onInput(newEq);
     };

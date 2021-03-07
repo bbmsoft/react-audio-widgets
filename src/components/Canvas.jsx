@@ -26,7 +26,6 @@ function Canvas(props) {
     return (
         <CanvasContext.Provider value={renderingContext}>
             <canvas width={width} height={height} ref={canvasRef} />
-            {/* hexagons are passed through the `children` prop */}
             {props.children}
         </CanvasContext.Provider>
     );

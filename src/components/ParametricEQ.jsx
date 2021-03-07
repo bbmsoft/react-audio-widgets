@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { CanvasContext } from './Canvas';
 import { clamped, linearScale, logarithmicScale } from '../scales/scales';
 import * as eqtils from './eqtils';
+import { GestureContext } from './gestureHandler';
 
 const background = "#333";
 const bandStroke = "#f808";
@@ -13,6 +14,7 @@ function ParametricEQ(props) {
     const eq = props.eq;
 
     const canvasContext = React.useContext(CanvasContext);
+    // const gestureContext = React.useContext(GestureContext);
 
     if (!window.eqs) {
         window.eqs = new Map();

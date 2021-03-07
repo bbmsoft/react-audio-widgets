@@ -8,7 +8,7 @@ function LabelledCircularSlider(props) {
     const converter = props.converter || noopScaleConverter();
     const formatter = props.formatter || (v => v);
     const formatted = formatter(value);
-    const val = converter.toUiCoordinates(value);
+    const val = converter.toUiCoordinate(value);
 
     const onRangedInput = v => onInput(converter.toValue(v));
 

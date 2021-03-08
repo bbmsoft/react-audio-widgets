@@ -64,13 +64,15 @@ function SliderEQ(props) {
         onInput(eq);
     }
 
-    const freqSliderValue = frequencyScale.convertTo(sliderScale, eq.bands[activeBand]?.frequency || eq.minFreq);
-    const gainSliderValue = gainScale.convertTo(sliderScale, eq.bands[activeBand]?.gain || eq.minGain);
-    const qSliderValue = qScale.convertTo(sliderScale, eq.bands[activeBand]?.q || eq.minQ);
+    const band = eq.bands[activeBand];
 
-    const frequencyLabel = formatFrequency(eq.bands[activeBand]?.frequency || eq.minFreq, true);
-    const gainLabel = formatGain(eq.bands[activeBand]?.gain || eq.minGain, true);
-    const qLabel = formatQ(eq.bands[activeBand]?.q || eq.minQ, true);
+    const freqSliderValue = frequencyScale.convertTo(sliderScale, band ? band.frequency : eq.minFreq);
+    const gainSliderValue = gainScale.convertTo(sliderScale, band ? band.gain : eq.minGain);
+    const qSliderValue = qScale.convertTo(sliderScale, band ? band.q : eq.minQ);
+
+    const frequencyLabel = formatFrequency(band ? band.frequency : eq.minFreq, true);
+    const gainLabel = formatGain(band ? band.gain : eq.minGain, true);
+    const qLabel = formatQ(band ? band.q : eq.minQ, true);
 
     return (
         <div>

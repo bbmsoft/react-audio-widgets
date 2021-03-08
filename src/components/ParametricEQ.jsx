@@ -36,8 +36,9 @@ function ParametricEQ(props) {
     const yConverter = uiConverter(gainScale, yScale);
 
     const activeBand = eq.activeBand;
-    const freq = eq.bands[activeBand]?.frequency || eq.minFreq;
-    const gain = eq.bands[activeBand]?.gain || eq.minGain;
+    const band = eq.bands[activeBand];
+    const freq = band ? band.frequency : eq.minFreq;
+    const gain = band ? band.gain : eq.minGain;
     const bounds = { xMin, yMin, xMax, yMax };
 
     const onMouseDown = (x, y) => {
@@ -48,9 +49,12 @@ function ParametricEQ(props) {
     useMouseDown(id.current, canvasContext.canvasRef, onMouseDown, bounds);
 
     const onDrag = (newFrequency, newGain) => {
-        eq.bands[eq.activeBand].frequency = newFrequency;
-        eq.bands[eq.activeBand].gain = newGain;
-        onInput(eq);
+        let band = eq.bands[eq.activeBand];
+        if (band) {
+            band.frequency = newFrequency;
+            band.gain = newGain;
+            onInput(eq);
+        }
     };
     useDragXY(id.current, canvasContext.canvasRef, [freq, gain], onDrag, [xConverter, yConverter], bounds);
 

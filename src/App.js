@@ -63,7 +63,7 @@ function App() {
   window.ws = ws;
 
   const eqReceived = receivedEq => {
-    const newEq = { ...receivedEq, activeBand: window.localEq?.activeBand || 0 };
+    const newEq = { ...receivedEq, activeBand: window.localEq.activeBand };
     if (window.inputLocked) {
       window.remoteEq = newEq;
     } else {

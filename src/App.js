@@ -5,29 +5,32 @@ import Canvas from './components/Canvas';
 import SliderEQ from './components/SliderEQ';
 import { Button } from '@material-ui/core';
 import KnobEqBand from './components/KnobEqBand';
+import StatusBar, { CONNECTED, CONNECTING, CONNECTION_CLOSED, DISCONNECTED, CONNECTION_ERROR } from './app/components/StatusBar';
 
 const BACKEND_ADDRESS = "ws://bbmsoft.net:9021/";
 // const BACKEND_ADDRESS = "ws://localhost:9021/";
 
-function connectToWs(updateEq, setWS) {
+function connectToWs(updateEq, setWS, setConnectionState) {
+  setConnectionState(CONNECTING);
   let socket = new WebSocket(BACKEND_ADDRESS);
 
   socket.onclose = e => {
-    alert("Backend connection lost. Click OK to reconnect!");
-    setTimeout(() => connectToWs(updateEq, setWS), 500);
+    setConnectionState(CONNECTION_CLOSED);
+    setTimeout(() => connectToWs(updateEq, setWS, setConnectionState), 2000);
   };
 
   socket.onopen = function (e) {
+    setConnectionState(CONNECTED);
     console.info("Connected to backend.");
   };
 
   socket.onerror = function (error) {
+    setConnectionState(CONNECTION_ERROR);
     console.error(error.message);
-    alert("Backend connection lost. Click OK to reconnect!");
-    setTimeout(() => connectToWs(updateEq, setWS), 500);
   };
 
   socket.onmessage = function (event) {
+    setConnectionState(CONNECTED);
     const eq = JSON.parse(event.data);
     if (eq && eq.bands) {
       updateEq(eq);
@@ -41,6 +44,7 @@ function App() {
 
   const [eq, setEq] = useState(null);
   const [ws, setWS] = useState(null);
+  const [connectionState, setConnectionState] = useState(DISCONNECTED);
 
   window.localEq = eq;
   window.ws = ws;
@@ -88,29 +92,34 @@ function App() {
 
   useEffect(() => {
     window.inputLocked = false;
-    connectToWs(eqReceived, setWS);
+    connectToWs(eqReceived, setWS, setConnectionState);
   }, []);
 
   const width = 1600;
-  const height = 500;
+  const height = 400;
 
   const mainEqHeight = 400;
 
-  const noOfMinis = 8;
+  const noOfMinis = 6;
+  const padding = 25;
+  const miniEqWidth = 125;
+  const miniEqHeight = (height - (noOfMinis - 1) * padding) / noOfMinis;
   const minis = [];
-  const miniEqWidth = width / noOfMinis;
-  const miniEqHeight = height - mainEqHeight;
-  const padding = 20;
+
+  const mainEqWidth = width - padding - miniEqWidth;
+
+  const xOffset = width - miniEqWidth;
+
   for (let i = 0; i < noOfMinis; i++) {
     minis.push(
       <ParametricEQ
         key={i}
         eq={eq}
         id={`miniEq-${i}`}
-        x={i * miniEqWidth + padding}
-        y={mainEqHeight + padding}
-        width={miniEqWidth - 2 * padding}
-        height={miniEqHeight - 2 * padding}
+        x={xOffset}
+        y={i * (miniEqHeight + padding)}
+        width={miniEqWidth}
+        height={miniEqHeight}
         minimal={true}
       />
     );
@@ -139,7 +148,7 @@ function App() {
             id="mainEq"
             x={0}
             y={0}
-            width={width}
+            width={mainEqWidth}
             height={mainEqHeight}
             onInput={onInput}
           />
@@ -152,6 +161,7 @@ function App() {
       </div>
       {bands}
       <div><Button variant="contained" onClick={reset}>Reset</Button></div>
+      <StatusBar status={connectionState} />
     </div>
   );
 }

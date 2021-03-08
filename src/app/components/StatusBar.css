@@ -1,0 +1,22 @@
+.status-bar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: red;
+    color: white;
+    text-align: center;
+}
+
+.disconnected, .connection-lost, .connection-error {
+    background-color: red;
+}
+
+.connecting {
+    background-color: yellow;
+    color: black;
+}
+
+.connected {
+    background-color: green;
+}

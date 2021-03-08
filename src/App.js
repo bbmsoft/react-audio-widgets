@@ -31,7 +31,8 @@ function connectToWs(updateEq, setWS, setConnectionState) {
 
   socket.onmessage = function (event) {
     setConnectionState(CONNECTED);
-    const eq = JSON.parse(event.data);
+    const msg = JSON.parse(event.data);
+    const eq = msg.eqUpdate;
     if (eq && eq.bands) {
       updateEq(eq);
     }
@@ -86,7 +87,7 @@ function App() {
 
   const reset = () => {
     if (window.ws) {
-      window.ws.send(JSON.stringify("reset"));
+      window.ws.send(JSON.stringify({ command: "reset" }));
     }
   }
 

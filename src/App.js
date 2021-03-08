@@ -1,6 +1,7 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
 import ParametricEQ from './components/ParametricEQ';
+import ParametricEQThumbnail from './components/ParametricEQThumbnail';
 import Canvas from './components/Canvas';
 import SliderEQ from './components/SliderEQ';
 import { Button } from '@material-ui/core';
@@ -41,9 +42,20 @@ function connectToWs(updateEq, setWS, setConnectionState) {
   setWS(socket);
 }
 
+const INITIAL_EQ = {
+  minFreq: 200,
+  maxFreq: 24000,
+  minGain: -12,
+  maxGain: -12,
+  minQ: 0.1,
+  maxQ: 10,
+  activeBand: 0,
+  bands: []
+}
+
 function App() {
 
-  const [eq, setEq] = useState(null);
+  const [eq, setEq] = useState(INITIAL_EQ);
   const [ws, setWS] = useState(null);
   const [connectionState, setConnectionState] = useState(DISCONNECTED);
 
@@ -113,15 +125,13 @@ function App() {
 
   for (let i = 0; i < noOfMinis; i++) {
     minis.push(
-      <ParametricEQ
+      <ParametricEQThumbnail
         key={i}
         eq={eq}
-        id={`miniEq-${i}`}
         x={xOffset}
         y={i * (miniEqHeight + padding)}
         width={miniEqWidth}
         height={miniEqHeight}
-        minimal={true}
       />
     );
   }

@@ -161,7 +161,7 @@ export function renderEq(eq, ctx, x, y, width, height, minimal, style) {
         }
     });
 
-    const ys = sum.map(g => gainScale.convertTo(yScale, g));
+    const ys = sum?.map(g => gainScale.convertTo(yScale, g)) || [];
     drawSum(ctx, xs, ys, y0, style.sumStroke, style.bandStroke);
 
     ctx.restore();

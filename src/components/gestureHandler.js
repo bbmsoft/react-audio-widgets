@@ -1,4 +1,4 @@
-export function handleMouseDown(id, elementRef, callback, bounds) {
+export function useMouseDown(id, elementRef, callback, bounds) {
 
     if (!window.mouseDown) {
         window.mouseDown = new Map();
@@ -13,12 +13,12 @@ export function handleMouseDown(id, elementRef, callback, bounds) {
     const gestureHandler = window.mouseDown[id];
     window.mouseDown[id] = { ...gestureHandler, element, callback, bounds };
 
-    if (!gestureHandler) {
+    if (callback && !gestureHandler) {
         watchMouseDown(element, id);
     }
 }
 
-export function handleDragX(id, elementRef, value, callback, converter) {
+export function useDragX(id, elementRef, value, callback, converter) {
 
     if (!window.dragX) {
         window.dragX = new Map();
@@ -33,12 +33,12 @@ export function handleDragX(id, elementRef, value, callback, converter) {
     const gestureHandler = window.dragX[id];
     window.dragX[id] = { ...gestureHandler, element, value, callback, converter };
 
-    if (!gestureHandler) {
+    if (callback && !gestureHandler) {
         watchDragX(element, id);
     }
 }
 
-export function handleDragY(id, elementRef, value, callback, converter) {
+export function useDragY(id, elementRef, value, callback, converter) {
 
     if (!window.dragY) {
         window.dragY = new Map();
@@ -53,12 +53,12 @@ export function handleDragY(id, elementRef, value, callback, converter) {
     const gestureHandler = window.dragY[id];
     window.dragY[id] = { ...gestureHandler, element, value, callback, converter };
 
-    if (!gestureHandler) {
+    if (callback && !gestureHandler) {
         watchDragY(element, id);
     }
 }
 
-export function handleDragXY(id, elementRef, values, callback, converters, bounds) {
+export function useDragXY(id, elementRef, values, callback, converters, bounds) {
 
     if (!window.dragXY) {
         window.dragXY = new Map();
@@ -73,7 +73,7 @@ export function handleDragXY(id, elementRef, values, callback, converters, bound
     const gestureHandler = window.dragXY[id];
     window.dragXY[id] = { ...gestureHandler, element, values, callback, converters, bounds };
 
-    if (!gestureHandler) {
+    if (callback && !gestureHandler) {
         watchDragXY(element, id);
     }
 }

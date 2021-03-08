@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { clamped, linearScale, uiConverter } from '../scales/scales';
-import { handleDragY } from './gestureHandler';
+import { useDragY } from './gestureHandler';
 import * as uuid from 'uuid';
 
 
@@ -29,12 +29,10 @@ function CircularSlider(props) {
     const ref = useRef(null);
     const id = useRef(uuid.v4());
 
-    if (onInput) {
-        const fadeHeight = 400;
-        const fadeScale = linearScale(0, fadeHeight, true);
-        const converter = uiConverter(valueScale, fadeScale);
-        handleDragY(id.current, ref, value, onInput, converter);
-    }
+    const fadeHeight = 400;
+    const fadeScale = linearScale(0, fadeHeight, true);
+    const converter = uiConverter(valueScale, fadeScale);
+    useDragY(id.current, ref, value, onInput, converter);
 
 
     return (

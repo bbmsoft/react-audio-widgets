@@ -1,87 +1,77 @@
+import { useRef } from "react";
+
 export function useMouseDown(id, elementRef, callback, bounds) {
 
-    if (!window.mouseDown) {
-        window.mouseDown = new Map();
-    }
-
+    const handlers = useRef(new Map()).current;
     const element = elementRef.current;
 
     if (!element) {
         return;
     }
 
-    const gestureHandler = window.mouseDown[id];
-    window.mouseDown[id] = { ...gestureHandler, element, callback, bounds };
+    const gestureHandler = handlers[id];
+    handlers[id] = { ...gestureHandler, element, callback, bounds };
 
     if (callback && !gestureHandler) {
-        watchMouseDown(element, id);
+        watchMouseDown(element, id, handlers);
     }
 }
 
 export function useDragX(id, elementRef, value, callback, converter) {
 
-    if (!window.dragX) {
-        window.dragX = new Map();
-    }
-
+    const handlers = useRef(new Map()).current;
     const element = elementRef.current;
 
     if (!element) {
         return;
     }
 
-    const gestureHandler = window.dragX[id];
-    window.dragX[id] = { ...gestureHandler, element, value, callback, converter };
+    const gestureHandler = handlers[id];
+    handlers[id] = { ...gestureHandler, element, value, callback, converter };
 
     if (callback && !gestureHandler) {
-        watchDragX(element, id);
+        watchDragX(element, id, handlers);
     }
 }
 
 export function useDragY(id, elementRef, value, callback, converter) {
 
-    if (!window.dragY) {
-        window.dragY = new Map();
-    }
-
+    const handlers = useRef(new Map()).current;
     const element = elementRef.current;
 
     if (!element) {
         return;
     }
 
-    const gestureHandler = window.dragY[id];
-    window.dragY[id] = { ...gestureHandler, element, value, callback, converter };
+    const gestureHandler = handlers[id];
+    handlers[id] = { ...gestureHandler, element, value, callback, converter };
 
     if (callback && !gestureHandler) {
-        watchDragY(element, id);
+        watchDragY(element, id, handlers);
     }
 }
 
 export function useDragXY(id, elementRef, values, callback, converters, bounds) {
 
-    if (!window.dragXY) {
-        window.dragXY = new Map();
-    }
-
+    const handlers = useRef(new Map()).current;
     const element = elementRef.current;
 
     if (!element) {
         return;
     }
 
-    const gestureHandler = window.dragXY[id];
-    window.dragXY[id] = { ...gestureHandler, element, values, callback, converters, bounds };
+    const gestureHandler = handlers[id];
+    handlers[id] = { ...gestureHandler, element, values, callback, converters, bounds };
 
     if (callback && !gestureHandler) {
-        watchDragXY(element, id);
+        watchDragXY(element, id, handlers);
     }
 }
 
-function watchMouseDown(element, id) {
+function watchMouseDown(element, id, handlers) {
 
     const listener = e => {
-        const { callback, bounds } = window.mouseDown[id];
+        const { callback, bounds } = handlers[id];
 
         if (isInBounds(e, bounds)) {
             const x = e.offsetX;
@@ -94,10 +84,10 @@ function watchMouseDown(element, id) {
     element.addEventListener("mousedown", listener);
 }
 
-function watchDragX(element, id) {
+function watchDragX(element, id, handlers) {
 
     const onMouseMove = e => {
-        const gestureHandler = window.dragX[id];
+        const gestureHandler = handlers[id];
         const { callback, converter, dragStartXOffset } = gestureHandler;
         const dragX = e.pageX;
         const valueX = dragX - dragStartXOffset;
@@ -107,7 +97,7 @@ function watchDragX(element, id) {
     };
 
     const onMouseDown = e => {
-        const gestureHandler = window.dragX[id];
+        const gestureHandler = handlers[id];
         const { converter, value } = gestureHandler;
         const dragStartX = e.pageX;
         const dragStartValueX = converter ? converter.toUiCoordinate(value) : value;
@@ -124,10 +114,10 @@ function watchDragX(element, id) {
     element.addEventListener("mousedown", onMouseDown);
 }
 
-function watchDragY(element, id) {
+function watchDragY(element, id, handlers) {
 
     const onMouseMove = e => {
-        const gestureHandler = window.dragY[id];
+        const gestureHandler = handlers[id];
         const { callback, converter, dragStartYOffset } = gestureHandler;
         const dragY = e.pageY;
         const valueY = dragY - dragStartYOffset;
@@ -137,7 +127,7 @@ function watchDragY(element, id) {
     };
 
     const onMouseDown = e => {
-        const gestureHandler = window.dragY[id];
+        const gestureHandler = handlers[id];
         const { value, converter } = gestureHandler;
         const dragStartY = e.pageY;
         const dragStartValueY = converter ? converter.toUiCoordinate(value) : value;
@@ -154,10 +144,10 @@ function watchDragY(element, id) {
     element.addEventListener("mousedown", onMouseDown);
 }
 
-function watchDragXY(element, id) {
+function watchDragXY(element, id, handlers) {
 
     const onMouseMove = e => {
-        const gestureHandler = window.dragXY[id];
+        const gestureHandler = handlers[id];
         const { callback, converters, dragStartXOffset, dragStartYOffset } = gestureHandler;
         const [converterX, converterY] = converters;
         const dragX = e.pageX;
@@ -171,7 +161,7 @@ function watchDragXY(element, id) {
     };
 
     const onMouseDown = e => {
-        const gestureHandler = window.dragXY[id];
+        const gestureHandler = handlers[id];
         const { converters, bounds } = gestureHandler;
         const [converterX, converterY] = converters;
 

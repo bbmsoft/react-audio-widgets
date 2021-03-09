@@ -2,8 +2,7 @@ import { CanvasContext } from './Canvas';
 import { clamped, linearScale, logarithmicScale, uiConverter } from '../scales/scales';
 import * as eqtils from './eqtils';
 import { useDragXY, useMouseDown } from './gestureHandler';
-import { useContext, useRef } from 'react';
-import * as uuid from 'uuid';
+import { useContext } from 'react';
 
 const background = "#333";
 const bandStroke = "#f808";
@@ -12,7 +11,6 @@ const sumStroke = "#f80";
 function ParametricEQ(props) {
 
     const canvasContext = useContext(CanvasContext);
-    const id = useRef(uuid.v4());
 
     const eq = { ...props.eq };
     const onInput = props.onInput;
@@ -46,7 +44,7 @@ function ParametricEQ(props) {
         eq.activeBand = band;
         onInput(eq);
     };
-    useMouseDown(id.current, canvasContext.canvasRef, onMouseDown, bounds);
+    useMouseDown(canvasContext.canvasRef, onMouseDown, bounds);
 
     const onDrag = (newFrequency, newGain) => {
         let band = eq.bands[eq.activeBand];
@@ -56,7 +54,7 @@ function ParametricEQ(props) {
             onInput(eq);
         }
     };
-    useDragXY(id.current, canvasContext.canvasRef, [freq, gain], onDrag, [xConverter, yConverter], bounds);
+    useDragXY(canvasContext.canvasRef, [freq, gain], onDrag, [xConverter, yConverter], bounds);
 
     if (canvasContext.context) {
         const ctx = canvasContext.context;

@@ -1,5 +1,4 @@
-import React, { useRef } from 'react';
-import * as uuid from 'uuid';
+import React from 'react';
 
 export const CanvasContext = React.createContext(null);
 
@@ -23,11 +22,12 @@ function Canvas(props) {
 
     const width = props.width;
     const height = props.height;
+    const id = props.id;
 
 
     return (
         <CanvasContext.Provider value={renderingContext}>
-            <canvas width={width} height={height} ref={canvasRef} />
+            <canvas id={id} width={width} height={height} ref={canvasRef} />
             {props.children}
         </CanvasContext.Provider>
     );

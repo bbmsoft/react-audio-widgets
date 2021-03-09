@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-export function useMouseDown(elementRef, callback, bounds) {
+export function useMouseDown(elementRef, callback) {
 
     const handlerRef = useRef(null);
     const element = elementRef.current;
@@ -10,7 +10,7 @@ export function useMouseDown(elementRef, callback, bounds) {
     }
 
     const gestureHandler = handlerRef.current;
-    handlerRef.current = { ...gestureHandler, element, callback, bounds };
+    handlerRef.current = { ...gestureHandler, element, callback };
 
     if (callback && !gestureHandler) {
         watchMouseDown(element, handlerRef);
@@ -51,7 +51,7 @@ export function useDragY(elementRef, value, callback, converter) {
     }
 }
 
-export function useDragXY(elementRef, values, callback, converters, bounds) {
+export function useDragXY(elementRef, values, callback, converters) {
 
     const handlerRef = useRef(null);
     const element = elementRef.current;
@@ -61,7 +61,7 @@ export function useDragXY(elementRef, values, callback, converters, bounds) {
     }
 
     const gestureHandler = handlerRef.current;
-    handlerRef.current = { ...gestureHandler, element, values, callback, converters, bounds };
+    handlerRef.current = { ...gestureHandler, element, values, callback, converters };
 
     if (callback && !gestureHandler) {
         watchDragXY(element, handlerRef);
@@ -70,17 +70,13 @@ export function useDragXY(elementRef, values, callback, converters, bounds) {
 
 function watchMouseDown(element, handlerRef) {
 
-    console.log("watchMouseDown");
-
     const listener = e => {
-        const { callback, bounds } = handlerRef.current;
+        const { callback } = handlerRef.current;
 
-        if (isInBounds(e, bounds)) {
-            const x = e.offsetX;
-            const y = e.offsetY;
-            callback(x, y);
-            e.preventDefault();
-        }
+        const x = e.offsetX;
+        const y = e.offsetY;
+        callback(x, y);
+        e.preventDefault();
     }
 
     element.addEventListener("mousedown", listener);
@@ -164,12 +160,8 @@ function watchDragXY(element, handlerRef) {
 
     const onMouseDown = e => {
         const gestureHandler = handlerRef.current;
-        const { converters, bounds } = gestureHandler;
+        const { converters } = gestureHandler;
         const [converterX, converterY] = converters;
-
-        if (!isInBounds(e, bounds)) {
-            return;
-        }
 
         const [valueX, valueY] = gestureHandler.values;
         const dragStartX = e.pageX;
@@ -188,11 +180,4 @@ function watchDragXY(element, handlerRef) {
 
     window.addEventListener("mouseup", onMouseUp);
     element.addEventListener("mousedown", onMouseDown);
-}
-
-function isInBounds(e, bounds) {
-
-    const x = e.offsetX;
-    const y = e.offsetY;
-    return bounds.xMin <= x && x <= bounds.xMax && bounds.yMin <= y && y <= bounds.yMax;
 }

@@ -1,8 +1,9 @@
+import './ParametricEq.css';
 import { CanvasContext } from './Canvas';
 import { clamped, linearScale, logarithmicScale, uiConverter } from '../scales/scales';
 import * as eqtils from './eqtils';
 import { useDragXY, useMouseDown } from './gestureHandler';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 
 const background = "#333";
 const bandStroke = "#f808";
@@ -10,15 +11,19 @@ const sumStroke = "#f80";
 
 function ParametricEQ(props) {
 
+    const divRef = useRef();
     const canvasContext = useContext(CanvasContext);
+
+    const div = divRef.current;
 
     const eq = { ...props.eq };
     const onInput = props.onInput;
-    const x = props.x || 0;
-    const y = props.y || 0;
-    const width = props.width || 900;
-    const height = props.height || 300;
-    const minimal = props.minimal;
+
+    const divBounds = div?.getBoundingClientRect();
+    const x = divBounds ? divBounds.x : 0;
+    const y = divBounds ? divBounds.y : 0;
+    const width = divBounds ? divBounds.width : 900;
+    const height = divBounds ? divBounds.height : 300;
 
     const xMin = x;
     const xMax = xMin + width;
@@ -37,14 +42,13 @@ function ParametricEQ(props) {
     const band = eq.bands[activeBand];
     const freq = band ? band.frequency : eq.minFreq;
     const gain = band ? band.gain : eq.minGain;
-    const bounds = { xMin, yMin, xMax, yMax };
 
     const onMouseDown = (x, y) => {
-        const band = eqtils.findClosestBand(eq, x, y, xMin, xMax, yMin, yMax);
+        const band = eqtils.findClosestBand(eq, x, y, 0, xMax - xMin, 0, yMax - yMin);
         eq.activeBand = band;
         onInput(eq);
     };
-    useMouseDown(canvasContext.canvasRef, onMouseDown, bounds);
+    useMouseDown(divRef, onMouseDown);
 
     const onDrag = (newFrequency, newGain) => {
         let band = eq.bands[eq.activeBand];
@@ -54,15 +58,15 @@ function ParametricEQ(props) {
             onInput(eq);
         }
     };
-    useDragXY(canvasContext.canvasRef, [freq, gain], onDrag, [xConverter, yConverter], bounds);
+    useDragXY(divRef, [freq, gain], onDrag, [xConverter, yConverter]);
 
     if (canvasContext.context) {
         const ctx = canvasContext.context;
         const style = { background, bandStroke, sumStroke };
-        eqtils.renderEq(eq, ctx, x, y, width, height, minimal, style);
+        eqtils.renderEq(eq, ctx, x, y, width, height, false, style);
     }
 
-    return null;
+    return <div className="parametric-eq" ref={divRef}></div>;
 }
 
 export default ParametricEQ;

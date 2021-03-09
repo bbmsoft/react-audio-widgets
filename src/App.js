@@ -108,30 +108,15 @@ function App() {
     connectToWs(eqReceived, setWS, setConnectionState);
   }, []);
 
-  const width = 1600;
-  const height = 400;
-
-  const mainEqHeight = 400;
 
   const noOfMinis = 6;
-  const padding = 25;
-  const miniEqWidth = 125;
-  const miniEqHeight = (height - (noOfMinis - 1) * padding) / noOfMinis;
   const minis = [];
-
-  const mainEqWidth = width - padding - miniEqWidth;
-
-  const xOffset = width - miniEqWidth;
 
   for (let i = 0; i < noOfMinis; i++) {
     minis.push(
       <ParametricEQThumbnail
         key={i}
         eq={eq}
-        x={xOffset}
-        y={i * (miniEqHeight + padding)}
-        width={miniEqWidth}
-        height={miniEqHeight}
       />
     );
   }
@@ -146,34 +131,32 @@ function App() {
     }
   }
 
+  const vw = document.documentElement.clientWidth;
+  const vh = document.documentElement.clientHeight;
+
   return (
-    <div className="App" style={{
-      width: `${width}px`,
-      margin: "0 auto",
-      left: "50%"
-    }}>
-      <div>
-        <Canvas width={width} height={height}>
-          <ParametricEQ
-            eq={eq}
-            id="mainEq"
-            x={0}
-            y={0}
-            width={mainEqWidth}
-            height={mainEqHeight}
-            onInput={onInput}
-          />
-          {minis}
-        </Canvas>
+    <Canvas id="root-canvas" width={vw} height={vh - 4}>
+
+      <div className="App" style={{
+        width: "75%",
+        margin: "0 auto",
+        left: "50%"
+      }}>
+        <ParametricEQ
+          eq={eq}
+          id="mainEq"
+          onInput={onInput}
+        />
+        <div style={{ marginBottom: "32px" }}>{minis}</div>
         <SliderEQ
           eq={eq}
           onInput={onInput}
         />
+        {bands}
+        <div><Button variant="contained" onClick={reset}>Reset</Button></div>
       </div>
-      {bands}
-      <div><Button variant="contained" onClick={reset}>Reset</Button></div>
       <StatusBar status={connectionState} />
-    </div>
+    </Canvas >
   );
 }
 

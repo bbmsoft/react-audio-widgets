@@ -57,6 +57,18 @@ function App() {
   const [eq, setEq] = useState(INITIAL_EQ);
   const [ws, setWS] = useState(null);
   const [connectionState, setConnectionState] = useState(DISCONNECTED);
+  const [size, setSize] = useState(null);
+
+  const resized = e => {
+    setSize(e);
+  }
+
+  useEffect(
+    () => {
+      window.addEventListener('resize', resized);
+      return () => window.removeEventListener('resize', resized);
+    }
+  );
 
   window.localEq = eq;
   window.ws = ws;

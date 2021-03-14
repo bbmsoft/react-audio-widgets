@@ -37,10 +37,30 @@
   }
 }
 
-
 #root-canvas {
   position: absolute;
   top: 0;
   left: 0;
   z-index: -100;
+}
+
+.scale {
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: -200;
+}
+
+.scale > .background {
+  fill: #333;
+}
+
+.scale > .tickmark-major {
+  stroke-width: 1;
+  stroke: #666;
+}
+
+.scale > .tickmark-minor {
+  stroke-width: 1;
+  stroke: #444;
 }

@@ -2,7 +2,7 @@ import './ParametricEq.css';
 import { clamped, linearScale, logarithmicScale, uiConverter } from '../scales/scales';
 import * as eqtils from './eqtils';
 import { useDragXY, useMouseDown } from './gestureHandler';
-import { useContext, useRef } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Scale from './Scale';
 import ParametricEqGraph from './ParametricEqGraph';
 import DivContext from './divContext';
@@ -14,12 +14,12 @@ const sumStroke = "#f80";
 
 function ParametricEQ(props) {
 
-    const canvasContext = useContext(CanvasContext);
-    const ctx = canvasContext?.context;
-
     const divRef = useRef();
+    const [div, setDiv] = useState(null);
 
-    const div = divRef.current;
+    useEffect(() => {
+        setDiv(divRef.current);
+    }, [])
 
     const eq = { ...props.eq };
     const onInput = props.onInput;
@@ -70,16 +70,13 @@ function ParametricEQ(props) {
     const majorGainTickMarks = eqtils.majorGainTickMarks(eq);
     const minorGainTickMarks = eqtils.minorGainTickMarks(eq);
 
-    if (ctx) {
-        const bounds = { x, y, width, height };
-        eqtils.clearEq(ctx, bounds, background);
-    }
-
     return (
         <div className="parametric-eq" ref={divRef}>
-            <DivContext.Provider value={divRef}>
-                <Scale scale={frequencyScale} majorTickMarks={majorFrequencyTickMarks} minorTickMarks={minorFrequencyTickMarks} vertical={false} />
-                <Scale scale={gainScale} majorTickMarks={majorGainTickMarks} minorTickMarks={minorGainTickMarks} vertical={true} />
+            <DivContext.Provider value={div}>
+                <Scale
+                    scaleX={frequencyScale} majorTickMarksX={majorFrequencyTickMarks} minorTickMarksX={minorFrequencyTickMarks}
+                    scaleY={gainScale} majorTickMarksY={majorGainTickMarks} minorTickMarksY={minorGainTickMarks}
+                />
                 <ParametricEqGraph eq={eq} minimal={false} />
             </DivContext.Provider>
         </div>

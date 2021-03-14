@@ -12,7 +12,7 @@ function ParametricEqGraph(props) {
 
     const canvasContext = useContext(CanvasContext);
 
-    const div = useContext(DivContext).current;
+    const div = useContext(DivContext);
 
     const eq = { ...props.eq };
 

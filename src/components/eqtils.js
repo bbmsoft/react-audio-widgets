@@ -114,7 +114,7 @@ function toDecibel(power) {
     return 20.0 * Math.log10(power);
 }
 
-export function clearEq(ctx, bounds, background) {
+export function renderEq(eq, ctx, bounds, minimal, style) {
 
     const { x, y, width, height } = bounds;
 
@@ -122,15 +122,7 @@ export function clearEq(ctx, bounds, background) {
     let clip = new Path2D();
     clip.rect(x, y, width, height);
     ctx.clip(clip);
-
     ctx.clearRect(x, y, width, height);
-    ctx.fillStyle = background;
-    ctx.fillRect(x, y, width, height);
-}
-
-export function renderEq(eq, ctx, bounds, minimal, style) {
-
-    const { x, y, width, height } = bounds;
 
     const xMin = x;
     const xMax = xMin + width;

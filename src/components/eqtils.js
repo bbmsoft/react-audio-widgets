@@ -118,19 +118,14 @@ export function clearEq(ctx, bounds, background) {
 
     const { x, y, width, height } = bounds;
 
-    const xMin = x;
-    const xMax = xMin + width;
-    const yMin = y;
-    const yMax = yMin + height;
-
     ctx.save();
     let clip = new Path2D();
-    clip.rect(xMin, yMin, width, height);
+    clip.rect(x, y, width, height);
     ctx.clip(clip);
 
-    ctx.clearRect(xMin, yMin, width, height);
+    ctx.clearRect(x, y, width, height);
     ctx.fillStyle = background;
-    ctx.fillRect(xMin, yMin, width, height);
+    ctx.fillRect(x, y, width, height);
 }
 
 export function renderEq(eq, ctx, bounds, minimal, style) {
@@ -266,10 +261,76 @@ export function findClosestBand(eq, x, y, xMin, xMax, yMin, yMax) {
     return closest;
 }
 
-export function majorTickMarks(eq) {
-    // TODO
+export function majorFrequencyTickMarks(eq) {
+
+    const min = eq.minFreq;
+    const minExp = Math.ceil(Math.log10(min));
+
+    const max = eq.maxFreq;
+    const maxExp = Math.ceil(Math.log10(max));
+
+    const output = [];
+
+    for (let exp = minExp; exp < maxExp; exp++) {
+        output.push(Math.pow(10, exp));
+    }
+
+    return output;
 }
 
-export function minorTickMarks(eq) {
-    // TODO
+export function minorFrequencyTickMarks(eq) {
+
+    const min = eq.minFreq;
+    const minExp = Math.floor(Math.log10(min));
+
+    const max = eq.maxFreq;
+    const maxExp = Math.ceil(Math.log10(max));
+
+    const output = [];
+
+    for (let exp = minExp; exp < maxExp; exp++) {
+        for (let multiplier = 1; multiplier < 10; multiplier++) {
+            const tick = multiplier * Math.pow(10, exp);
+            if (eq.minFreq < tick && tick < eq.maxFreq) {
+                output.push(tick);
+            }
+        }
+    }
+
+    return output;
+}
+
+
+export function majorGainTickMarks(eq) {
+
+    const min = eq.minGain;
+    const max = eq.maxGain;
+
+    const output = [];
+
+    for (let tick = 0; tick < max; tick += 6) {
+        output.push(tick);
+        if (tick != -tick) {
+            output.push(-tick);
+        }
+    }
+
+    return output;
+}
+
+export function minorGainTickMarks(eq) {
+
+    const min = eq.minGain;
+    const max = eq.maxGain;
+
+    const output = [];
+
+    for (let tick = 3; tick < max; tick += 6) {
+        output.push(tick);
+        if (tick != -tick) {
+            output.push(-tick);
+        }
+    }
+
+    return output;
 }

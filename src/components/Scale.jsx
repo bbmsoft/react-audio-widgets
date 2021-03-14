@@ -4,7 +4,7 @@ import { CanvasContext } from './Canvas';
 import DivContext from './divContext';
 import * as scaleUtils from './scaleUtils';
 
-function XScale(props) {
+function Scale(props) {
 
     const scale = props.scale || linearScale(0, 100);
     const majorTickMarks = props.majorTickMarks || [25, 50, 75];
@@ -26,10 +26,10 @@ function XScale(props) {
 
         const bounds = { x, y, width, height };
 
-        scaleUtils.renderXScale(scale, majorTickMarks, minorTickMarks, bounds, ctx);
+        scaleUtils.renderScale(scale, majorTickMarks, minorTickMarks, bounds, ctx, props.vertical);
     }
 
     return null;
 }
 
-export default XScale;
+export default Scale;

@@ -42,7 +42,7 @@ function connectToWs(updateEq, setWS, setConnectionState) {
 }
 
 const INITIAL_EQ = {
-  minFreq: 200,
+  minFreq: 20,
   maxFreq: 24000,
   minGain: -12,
   maxGain: -12,

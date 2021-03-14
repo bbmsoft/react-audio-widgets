@@ -2,17 +2,17 @@ import { CanvasContext } from './Canvas';
 import * as eqtils from './eqtils';
 import { useContext, useRef } from 'react';
 import './ParametricEqThumbnail.css';
+import DivContext from './divContext';
 
 const background = "#333";
 const bandStroke = "#f808";
 const sumStroke = "#f80";
 
-function ParametricEQThumbnail(props) {
+function ParametricEqGraph(props) {
 
-    const divRef = useRef();
     const canvasContext = useContext(CanvasContext);
 
-    const div = divRef.current;
+    const div = useContext(DivContext).current;
 
     const eq = { ...props.eq };
 
@@ -22,13 +22,15 @@ function ParametricEQThumbnail(props) {
     const width = divBounds ? divBounds.width : 900;
     const height = divBounds ? divBounds.height : 300;
 
+    const bounds = { x, y, width, height };
+
     if (canvasContext.context) {
         const ctx = canvasContext.context;
         const style = { background, bandStroke, sumStroke };
-        eqtils.renderEq(eq, ctx, x, y, width, height, true, style);
+        eqtils.renderEq(eq, ctx, bounds, props.minimal, style);
     }
 
-    return <div className="parametric-eq-thumbnail" ref={divRef}></div>;
+    return null;
 }
 
-export default ParametricEQThumbnail;
+export default ParametricEqGraph;

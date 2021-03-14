@@ -114,7 +114,28 @@ function toDecibel(power) {
     return 20.0 * Math.log10(power);
 }
 
-export function renderEq(eq, ctx, x, y, width, height, minimal, style) {
+export function clearEq(ctx, bounds, background) {
+
+    const { x, y, width, height } = bounds;
+
+    const xMin = x;
+    const xMax = xMin + width;
+    const yMin = y;
+    const yMax = yMin + height;
+
+    ctx.save();
+    let clip = new Path2D();
+    clip.rect(xMin, yMin, width, height);
+    ctx.clip(clip);
+
+    ctx.clearRect(xMin, yMin, width, height);
+    ctx.fillStyle = background;
+    ctx.fillRect(xMin, yMin, width, height);
+}
+
+export function renderEq(eq, ctx, bounds, minimal, style) {
+
+    const { x, y, width, height } = bounds;
 
     const xMin = x;
     const xMax = xMin + width;
@@ -137,16 +158,6 @@ export function renderEq(eq, ctx, x, y, width, height, minimal, style) {
     const frequencies = xs.map(x => xScale.convertTo(frequencyScale, x));
 
     let sum;
-
-    ctx.clearRect(xMin, yMin, width, height);
-
-    ctx.save();
-    let clip = new Path2D();
-    clip.rect(xMin, yMin, width, height);
-    ctx.clip(clip);
-
-    ctx.fillStyle = style.background;
-    ctx.fillRect(xMin, yMin, width, height);
 
     eq.bands.forEach(b => {
         const gains = computeBandCurve(b, frequencies);
@@ -253,4 +264,12 @@ export function findClosestBand(eq, x, y, xMin, xMax, yMin, yMax) {
     }
 
     return closest;
+}
+
+export function majorTickMarks(eq) {
+    // TODO
+}
+
+export function minorTickMarks(eq) {
+    // TODO
 }

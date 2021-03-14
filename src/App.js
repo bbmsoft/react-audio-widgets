@@ -1,7 +1,6 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
 import ParametricEQ from './components/ParametricEQ';
-import ParametricEQThumbnail from './components/ParametricEQThumbnail';
 import Canvas from './components/Canvas';
 import SliderEQ from './components/SliderEQ';
 import { Button } from '@material-ui/core';
@@ -112,14 +111,14 @@ function App() {
   const noOfMinis = 6;
   const minis = [];
 
-  for (let i = 0; i < noOfMinis; i++) {
-    minis.push(
-      <ParametricEQThumbnail
-        key={i}
-        eq={eq}
-      />
-    );
-  }
+  // for (let i = 0; i < noOfMinis; i++) {
+  //   minis.push(
+  //     <ParametricEQThumbnail
+  //       key={i}
+  //       eq={eq}
+  //     />
+  //   );
+  // }
 
   const bands = [];
 

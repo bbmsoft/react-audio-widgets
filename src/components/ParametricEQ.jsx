@@ -1,9 +1,12 @@
 import './ParametricEq.css';
-import { CanvasContext } from './Canvas';
 import { clamped, linearScale, logarithmicScale, uiConverter } from '../scales/scales';
 import * as eqtils from './eqtils';
 import { useDragXY, useMouseDown } from './gestureHandler';
 import { useContext, useRef } from 'react';
+import XScale from './XScale';
+import ParametricEqGraph from './ParametricEqGraph';
+import DivContext from './divContext';
+import { CanvasContext } from './Canvas';
 
 const background = "#333";
 const bandStroke = "#f808";
@@ -11,8 +14,10 @@ const sumStroke = "#f80";
 
 function ParametricEQ(props) {
 
-    const divRef = useRef();
     const canvasContext = useContext(CanvasContext);
+    const ctx = canvasContext?.context;
+
+    const divRef = useRef();
 
     const div = divRef.current;
 
@@ -60,13 +65,22 @@ function ParametricEQ(props) {
     };
     useDragXY(divRef, [freq, gain], onDrag, [xConverter, yConverter]);
 
-    if (canvasContext.context) {
-        const ctx = canvasContext.context;
-        const style = { background, bandStroke, sumStroke };
-        eqtils.renderEq(eq, ctx, x, y, width, height, false, style);
+    const majorTickMarks = eqtils.majorTickMarks(eq);
+    const minorTickMarks = eqtils.minorTickMarks(eq);
+
+    if (ctx) {
+        const bounds = { x, y, width, height };
+        eqtils.clearEq(ctx, bounds, background);
     }
 
-    return <div className="parametric-eq" ref={divRef}></div>;
+    return (
+        <div className="parametric-eq" ref={divRef}>
+            <DivContext.Provider value={divRef}>
+                <XScale />
+                <ParametricEqGraph eq={eq} minimal={false} />
+            </DivContext.Provider>
+        </div>
+    );
 }
 
 export default ParametricEQ;

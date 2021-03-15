@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { linearScale, uiConverter } from '../scales/scales';
-import { CanvasContext } from './Canvas';
 import DivContext from './divContext';
 
 function renderScale(valueScale, tickMarks, width, height, vertical, className) {

@@ -1,45 +1,16 @@
 import './App.css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ParametricEQ from './components/ParametricEQ';
 import Canvas from './components/Canvas';
 import SliderEQ from './components/SliderEQ';
 import { Button } from '@material-ui/core';
 import KnobEqBand from './components/KnobEqBand';
-import StatusBar, { CONNECTED, CONNECTING, CONNECTION_CLOSED, DISCONNECTED, CONNECTION_ERROR } from './app/components/StatusBar';
+import StatusBar, { DISCONNECTED } from './app/components/StatusBar';
+import useWebSocket from './hooks/ws';
 
 const BACKEND_ADDRESS = "ws://bbmsoft.net:9021/";
 // const BACKEND_ADDRESS = "ws://localhost:9021/";
 
-function connectToWs(updateEq, setWS, setConnectionState) {
-  setConnectionState(CONNECTING);
-  let socket = new WebSocket(BACKEND_ADDRESS);
-
-  socket.onclose = e => {
-    setConnectionState(CONNECTION_CLOSED);
-    setTimeout(() => connectToWs(updateEq, setWS, setConnectionState), 2000);
-  };
-
-  socket.onopen = function (e) {
-    setConnectionState(CONNECTED);
-    console.info("Connected to backend.");
-  };
-
-  socket.onerror = function (error) {
-    setConnectionState(CONNECTION_ERROR);
-    console.error(error.message);
-  };
-
-  socket.onmessage = function (event) {
-    setConnectionState(CONNECTED);
-    const msg = JSON.parse(event.data);
-    const eq = msg.eqUpdate;
-    if (eq && eq.bands) {
-      updateEq(eq);
-    }
-  };
-
-  setWS(socket);
-}
 
 const INITIAL_EQ = {
   minFreq: 20,
@@ -54,13 +25,15 @@ const INITIAL_EQ = {
 
 function App() {
 
+  const appState = useRef({});
+
   const [eq, setEq] = useState(INITIAL_EQ);
-  const [ws, setWS] = useState(null);
   const [connectionState, setConnectionState] = useState(DISCONNECTED);
-  const [size, setSize] = useState(null);
+
+  appState.current.eq = eq;
 
   const resized = e => {
-    setSize(e);
+    setEq({ ...appState.current.eq });
   }
 
   useEffect(
@@ -70,59 +43,56 @@ function App() {
     }
   );
 
-  window.localEq = eq;
-  window.ws = ws;
-
   const eqReceived = receivedEq => {
-    const newEq = { ...receivedEq, activeBand: window.localEq.activeBand };
-    if (window.inputLocked) {
-      window.remoteEq = newEq;
+    const newEq = { ...receivedEq, activeBand: appState.current.eq.activeBand };
+    if (appState.current.inputLocked) {
+      appState.current.remoteEq = newEq;
     } else {
       setEq(newEq);
     }
   }
 
+  const [sendMessage, closeWs] = useWebSocket(BACKEND_ADDRESS, eqReceived, setConnectionState);
+
   const onInput = newEq => {
 
-    if (window.timeout) {
-      clearTimeout(window.timeout);
+    if (appState.current.timeout) {
+      clearTimeout(appState.current.timeout);
     }
 
-    window.timeout = setTimeout(() => {
-      window.inputLocked = false;
-      if (window.remoteEq) {
-        setEq(window.remoteEq);
-        window.remoteEq = null;
+    appState.current.timeout = setTimeout(() => {
+      appState.current.inputLocked = false;
+      if (appState.current.remoteEq) {
+        setEq(appState.current.remoteEq);
+        appState.current.remoteEq = null;
       }
     }, 200);
 
-    window.inputLocked = true;
+    appState.current.inputLocked = true;
 
     setEq({ ...newEq });
 
-    if (!window.sendPending) {
-      window.sendPending = setTimeout(() => {
-        window.sendPending = null;
-        window.ws && window.ws.send(JSON.stringify({ eqUpdate: window.localEq }));
+    if (!appState.current.sendPending) {
+      appState.current.sendPending = setTimeout(() => {
+        appState.current.sendPending = null;
+        sendMessage(JSON.stringify({ eqUpdate: appState.current.eq }));
       }, 17);
     }
   };
 
   const reset = () => {
-    if (window.ws) {
-      window.ws.send(JSON.stringify({ command: "reset" }));
-    }
+    sendMessage(JSON.stringify({ command: "reset" }));
   }
 
   useEffect(() => {
-    window.inputLocked = false;
-    connectToWs(eqReceived, setWS, setConnectionState);
+    appState.current.inputLocked = false;
+    return closeWs;
   }, []);
 
 
-  const noOfMinis = 6;
-  const minis = [];
-
+  // const noOfMinis = 6;
+  // const minis = [];
+  // 
   // for (let i = 0; i < noOfMinis; i++) {
   //   minis.push(
   //     <ParametricEQThumbnail
@@ -158,7 +128,7 @@ function App() {
           id="mainEq"
           onInput={onInput}
         />
-        <div style={{ marginBottom: "32px" }}>{minis}</div>
+        {/* <div style={{ marginBottom: "32px" }}>{minis}</div> */}
         <SliderEQ
           eq={eq}
           onInput={onInput}

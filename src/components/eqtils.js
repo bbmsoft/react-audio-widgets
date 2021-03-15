@@ -295,14 +295,13 @@ export function minorFrequencyTickMarks(eq) {
 
 export function majorGainTickMarks(eq) {
 
-    const min = eq.minGain;
     const max = eq.maxGain;
 
     const output = [];
 
     for (let tick = 0; tick < max; tick += 6) {
         output.push(tick);
-        if (tick != -tick) {
+        if (tick !== -tick) {
             output.push(-tick);
         }
     }
@@ -312,14 +311,13 @@ export function majorGainTickMarks(eq) {
 
 export function minorGainTickMarks(eq) {
 
-    const min = eq.minGain;
     const max = eq.maxGain;
 
     const output = [];
 
     for (let tick = 3; tick < max; tick += 6) {
         output.push(tick);
-        if (tick != -tick) {
+        if (tick !== -tick) {
             output.push(-tick);
         }
     }

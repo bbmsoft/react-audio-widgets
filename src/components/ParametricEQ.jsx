@@ -1,16 +1,11 @@
 import './ParametricEq.css';
 import { clamped, linearScale, logarithmicScale, uiConverter } from '../scales/scales';
 import * as eqtils from './eqtils';
-import { useDragXY, useMouseDown } from './gestureHandler';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useDragXY, useMouseDown } from '../hooks/gestureHandler';
+import { useEffect, useRef, useState } from 'react';
 import Scale from './Scale';
 import ParametricEqGraph from './ParametricEqGraph';
 import DivContext from './divContext';
-import { CanvasContext } from './Canvas';
-
-const background = "#333";
-const bandStroke = "#f808";
-const sumStroke = "#f80";
 
 function ParametricEQ(props) {
 

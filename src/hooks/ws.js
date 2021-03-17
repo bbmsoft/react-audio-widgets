@@ -36,7 +36,7 @@ function connectToWs(address, updateEq, wsRef, setConnectionState) {
     socket.onclose = e => {
         console.info("WS connection closed.");
         setConnectionState(CONNECTION_CLOSED);
-        setTimeout(() => connectToWs(updateEq, wsRef, setConnectionState), 2000);
+        setTimeout(() => connectToWs(address, updateEq, wsRef, setConnectionState), 2000);
     };
 
     socket.onopen = function (e) {

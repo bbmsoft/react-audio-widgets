@@ -1,6 +1,7 @@
 # List the start up tasks. Learn more https://www.gitpod.io/docs/config-start-tasks/
 tasks:
-  - command: curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh && curl https://raw.githubusercontent.com/bbmsoft/gitpod-workspace-common/main/01-git-prompt.sh -o ~/.bashrc.d/01-git-prompt && source ~/.bashrc
+  - init: curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh && curl https://raw.githubusercontent.com/bbmsoft/gitpod-workspace-common/main/01-git-prompt.sh -o ~/.bashrc.d/01-git-prompt && nvm install && nvm use && npm i
+    command: source ~/.bashrc && npm run start
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
 ports:

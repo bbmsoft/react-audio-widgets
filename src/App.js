@@ -8,7 +8,7 @@ import KnobEqBand from './components/KnobEqBand';
 import StatusBar, { DISCONNECTED } from './app/components/StatusBar';
 import useWebSocket from './hooks/ws';
 
-const BACKEND_ADDRESS = "ws://bbmsoft.net:9021/";
+const BACKEND_ADDRESS = "wss://backend.ensemble.bbmsoft.net/";
 // const BACKEND_ADDRESS = "ws://localhost:9021/";
 
 
@@ -87,6 +87,7 @@ function App() {
   useEffect(() => {
     appState.current.inputLocked = false;
     return closeWs;
+    // eslint-disable-next-line
   }, []);
 
 

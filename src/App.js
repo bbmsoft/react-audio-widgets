@@ -114,10 +114,10 @@ function App() {
   }
 
   const vw = document.documentElement.clientWidth;
-  const vh = document.documentElement.clientHeight;
+
 
   return (
-    <Canvas id="root-canvas" width={vw} height={vh - 4}>
+    <Canvas id="root-canvas" width={vw}>
 
       <div className="App" style={{
         width: "75%",

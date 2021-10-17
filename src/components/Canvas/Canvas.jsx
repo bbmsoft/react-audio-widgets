@@ -22,13 +22,14 @@ function Canvas(props) {
         });
     }, []);
 
+    const docHeight = document.body.clientHeight;
     const ratio = Math.ceil(window.devicePixelRatio);
     const width = props.width * ratio;
-    const height = props.height * ratio;
+    const height = docHeight * ratio;
     const id = props.id;
     const style = {
         width: `${props.width}px`,
-        height: `${props.height}px`
+        height: `${docHeight}px`
     };
 
     return (

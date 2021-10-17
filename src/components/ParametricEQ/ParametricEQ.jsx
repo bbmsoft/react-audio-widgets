@@ -1,11 +1,11 @@
 import './ParametricEq.css';
-import { clamped, linearScale, logarithmicScale, uiConverter } from '../scales/scales';
-import * as eqtils from './eqtils';
+import { clamped, linearScale, logarithmicScale, uiConverter } from '../../scales/scales';
+import * as eqtils from '../EqCommon/eqtils';
 import { useDragXY, useMouseDown } from '../hooks/gestureHandler';
 import { useEffect, useRef, useState } from 'react';
-import Scale from './Scale';
+import Scale from '../Scale/Scale';
 import ParametricEqGraph from './ParametricEqGraph';
-import DivContext from './divContext';
+import DivContext from '../divContext';
 
 function ParametricEQ(props) {
 

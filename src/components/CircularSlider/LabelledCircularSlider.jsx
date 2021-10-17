@@ -1,6 +1,6 @@
 import React from 'react';
 import CircularSlider from './CircularSlider';
-import { noopScaleConverter } from '../scales/scales';
+import { noopScaleConverter } from '../../scales/scales';
 
 function LabelledCircularSlider(props) {
 

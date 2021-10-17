@@ -1,8 +1,8 @@
 import { Card } from '@material-ui/core';
 import React from 'react';
-import { formatFrequency, formatGain, formatQ } from '../scales/formatters';
-import { clamped, linearScale, logarithmicScale, uiConverter } from '../scales/scales';
-import LabelledCircularSlider from './LabelledCircularSlider';
+import { formatFrequency, formatGain, formatQ } from '../../scales/formatters';
+import { clamped, linearScale, logarithmicScale, uiConverter } from '../../scales/scales';
+import LabelledCircularSlider from '../CircularSlider/LabelledCircularSlider';
 
 function KnobEqBand(props) {
 

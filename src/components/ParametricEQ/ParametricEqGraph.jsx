@@ -1,8 +1,8 @@
-import { CanvasContext } from './Canvas';
-import * as eqtils from './eqtils';
+import { CanvasContext } from '../Canvas/Canvas';
+import * as eqtils from '../EqCommon/eqtils';
 import { useContext } from 'react';
 import './ParametricEqThumbnail.css';
-import DivContext from './divContext';
+import DivContext from '../divContext';
 
 const background = "#333";
 const bandStroke = "#f808";

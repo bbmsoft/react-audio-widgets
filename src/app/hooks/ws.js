@@ -1,6 +1,6 @@
 
 import { useRef } from 'react';
-import { CONNECTED, CONNECTING, CONNECTION_CLOSED, DISCONNECTED, CONNECTION_ERROR } from '../app/components/StatusBar';
+import { CONNECTED, CONNECTING, CONNECTION_CLOSED, DISCONNECTED, CONNECTION_ERROR } from '../components/StatusBar';
 
 function useWebSocket(address, eqReceived, setConnectionState) {
 

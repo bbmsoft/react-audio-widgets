@@ -1,4 +1,4 @@
-import { linearScale, logarithmicScale } from "../scales/scales";
+import { linearScale, logarithmicScale } from "../../scales/scales";
 
 export const BandType = {
     BELL: 0,

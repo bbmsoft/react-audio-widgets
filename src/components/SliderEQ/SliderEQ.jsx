@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Grid, Slider, TextField } from '@material-ui/core';
 import React from 'react';
-import { linearScale, logarithmicScale } from '../scales/scales';
-import { formatFrequency, formatGain, formatQ } from '../scales/formatters'
+import { linearScale, logarithmicScale } from '../../scales/scales';
+import { formatFrequency, formatGain, formatQ } from '../../scales/formatters'
 
 function SliderEQ(props) {
 

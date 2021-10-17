@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { clamped, linearScale, uiConverter } from '../scales/scales';
+import { clamped, linearScale, uiConverter } from '../../scales/scales';
 import { useDragY } from '../hooks/gestureHandler';
 
 function CircularSlider(props) {

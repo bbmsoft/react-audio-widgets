@@ -1,12 +1,12 @@
 import './App.css';
 import React, { useEffect, useRef, useState } from 'react';
-import ParametricEQ from './components/ParametricEQ';
-import Canvas from './components/Canvas';
-import SliderEQ from './components/SliderEQ';
+import ParametricEQ from './components/ParametricEQ/ParametricEQ';
+import Canvas from './components/Canvas/Canvas';
+import SliderEQ from './components/SliderEQ/SliderEQ';
 import { Button } from '@material-ui/core';
-import KnobEqBand from './components/KnobEqBand';
+import KnobEqBand from './components/SliderEQ/KnobEqBand';
 import StatusBar, { DISCONNECTED } from './app/components/StatusBar';
-import useWebSocket from './hooks/ws';
+import useWebSocket from './app/hooks/ws';
 
 const BACKEND_ADDRESS = "wss://backend.ensemble.bbmsoft.net/";
 // const BACKEND_ADDRESS = "ws://localhost:9021/";

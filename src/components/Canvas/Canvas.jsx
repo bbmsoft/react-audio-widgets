@@ -20,14 +20,18 @@ function Canvas(props) {
         });
     }, []);
 
-    const width = props.width;
-    const height = props.height;
+    const ratio = Math.ceil(window.devicePixelRatio);
+    const width = props.width * ratio;
+    const height = props.height * ratio;
     const id = props.id;
-
+    const style = {
+        width: `${width}px`,
+        height: `${height}px`
+    };
 
     return (
         <CanvasContext.Provider value={renderingContext}>
-            <canvas id={id} width={width} height={height} ref={canvasRef} />
+            <canvas id={id} width={width} height={height} ref={canvasRef} style={style} />
             {props.children}
         </CanvasContext.Provider>
     );

@@ -21,7 +21,7 @@ function ParametricEQ(props) {
 
     const divBounds = div?.getBoundingClientRect();
     const x = divBounds ? divBounds.x : 0;
-    const y = divBounds ? divBounds.y : 0;
+    const y = divBounds ? divBounds.y + window.scrollY : 0;
     const width = divBounds ? divBounds.width : 900;
     const height = divBounds ? divBounds.height : 300;
 
@@ -44,7 +44,7 @@ function ParametricEQ(props) {
     const gain = band ? band.gain : eq.minGain;
 
     const onMouseDown = (x, y) => {
-        const band = eqtils.findClosestBand(eq, x, y, 0, xMax - xMin, 0, yMax - yMin);
+        const band = eqtils.findClosestBand(eq, x, y, 0, width, 0, height);
         eq.activeBand = band;
         onInput(eq);
     };

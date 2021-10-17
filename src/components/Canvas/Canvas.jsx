@@ -14,8 +14,6 @@ function Canvas(props) {
     React.useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
-        const ratio = Math.ceil(window.devicePixelRatio);
-        context.setTransform(ratio, 0, 0, ratio, 0, 0);
         setRenderingContext({
             canvasRef,
             context
@@ -28,8 +26,8 @@ function Canvas(props) {
     const height = docHeight * ratio;
     const id = props.id;
     const style = {
-        width: `${width}px`,
-        height: `${height}px`
+        width: `${props.width}px`,
+        height: `${docHeight}px`
     };
 
     return (

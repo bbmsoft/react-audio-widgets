@@ -116,6 +116,9 @@ function toDecibel(power) {
 
 export function renderEq(eq, ctx, bounds, minimal, style) {
 
+    const ratio = Math.ceil(window.devicePixelRatio);
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
     const { x, y, width, height } = bounds;
 
     ctx.save();

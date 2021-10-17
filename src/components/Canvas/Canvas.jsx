@@ -14,6 +14,10 @@ function Canvas(props) {
     React.useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
+        const ratio = Math.ceil(window.devicePixelRatio);
+        if (set2dTransform) {
+            context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        }
         setRenderingContext({
             canvasRef,
             context

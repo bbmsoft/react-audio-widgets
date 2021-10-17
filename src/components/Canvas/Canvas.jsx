@@ -28,8 +28,8 @@ function Canvas(props) {
     const height = docHeight * ratio;
     const id = props.id;
     const style = {
-        width: `${props.width}px`,
-        height: `${docHeight}px`
+        width: `${width}px`,
+        height: `${height}px`
     };
 
     return (

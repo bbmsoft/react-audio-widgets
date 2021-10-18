@@ -11,6 +11,7 @@ const Tooltip = React.forwardRef((props, ref) => {
         position: "absolute",
         left: x,
         top: y,
+        zIndex: 999,
         color: "#aaa",
         backgroundColor: "#111b",
         border: "4px solid #aaa",

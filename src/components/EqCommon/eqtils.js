@@ -195,10 +195,10 @@ export function tooltip(tooltipRef, eq, bounds) {
     const tooltipHeight = tooltipBounds ? tooltipBounds.height : 0;
 
     const tooltipRawY = gainScale.convertTo(yScale, gain) - tooltipHeight - (maxBandCircleRadius / 2);
-    const tooltipY = Math.min(Math.max(8, tooltipRawY), document.body.clientHeight - 8);
+    const tooltipY = Math.min(Math.max(8 + window.scrollY, tooltipRawY), window.innerHeight + window.scrollY - 8);
     const yOffset = Math.min((tooltipWidth / tooltipHeight) * (tooltipY - tooltipRawY), (tooltipWidth + maxBandCircleRadius) / 2);
     const tooltipRawX = frequencyScale.convertTo(xScale, freq) - tooltipWidth / 2;
-    const tooltipX = Math.min(Math.max(8, tooltipRawX - yOffset), document.body.clientWidth - 8);
+    const tooltipX = Math.min(Math.max(8, tooltipRawX - yOffset), window.innerWidth - 8);
 
     const keyStyle = {
         fontWeight: "bold",

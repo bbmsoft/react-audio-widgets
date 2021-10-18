@@ -196,7 +196,7 @@ export function tooltip(tooltipRef, eq, bounds) {
 
     const tooltipRawY = gainScale.convertTo(yScale, gain) - tooltipHeight - (maxBandCircleRadius / 2);
     const tooltipY = Math.min(Math.max(8, tooltipRawY), document.body.clientHeight - 8);
-    const yOffset = Math.min(2 * (tooltipY - tooltipRawY), (tooltipWidth + maxBandCircleRadius) / 2);
+    const yOffset = Math.min((tooltipWidth / tooltipHeight) * (tooltipY - tooltipRawY), (tooltipWidth + maxBandCircleRadius) / 2);
     const tooltipRawX = frequencyScale.convertTo(xScale, freq) - tooltipWidth / 2;
     const tooltipX = Math.min(Math.max(8, tooltipRawX - yOffset), document.body.clientWidth - 8);
 

@@ -1,4 +1,5 @@
 import { linearScale, logarithmicScale } from "../../scales/scales";
+import { formatFrequency, formatGain, formatQ } from '../../scales/formatters';
 
 export const BandType = {
     BELL: 0,
@@ -166,6 +167,72 @@ export function renderEq(eq, ctx, bounds, minimal, style) {
     drawSum(ctx, xs, ys, y0, style.sumStroke, style.bandStroke);
 
     ctx.restore();
+}
+
+export function tooltip(tooltipRef, eq, bounds) {
+
+    const { x, y, width, height } = bounds;
+    const tooltip = tooltipRef.current;
+
+    const xMin = x;
+    const xMax = x + width;
+    const yMin = y;
+    const yMax = y + height;
+    const maxBandCircleRadius = Math.min(Math.min(width, height) / 5, Math.max(width, height) / 20);
+    const frequencyScale = logarithmicScale(eq.minFreq, eq.maxFreq);
+    const gainScale = linearScale(eq.minGain, eq.maxGain);
+    const xScale = linearScale(xMin, xMax);
+    const yScale = linearScale(yMin, yMax, true);
+
+    const activeBand = eq.activeBand;
+    const band = eq.bands[activeBand];
+    const freq = band ? band.frequency : eq.minFreq;
+    const gain = band ? band.gain : eq.minGain;
+    const q = band ? band.q : eq.minQ;
+
+    const tooltipBounds = tooltip?.getBoundingClientRect();
+    const tooltipWidth = tooltipBounds ? tooltipBounds.width : 0;
+    const tooltipHeight = tooltipBounds ? tooltipBounds.height : 0;
+
+    const tooltipRawY = gainScale.convertTo(yScale, gain) - tooltipHeight - (maxBandCircleRadius / 2);
+    const tooltipY = Math.min(Math.max(8, tooltipRawY), document.body.clientHeight - 8);
+    const yOffset = Math.min(2 * (tooltipY - tooltipRawY), (tooltipWidth + maxBandCircleRadius) / 2);
+    const tooltipRawX = frequencyScale.convertTo(xScale, freq) - tooltipWidth / 2;
+    const tooltipX = Math.min(Math.max(8, tooltipRawX - yOffset), document.body.clientWidth - 8);
+
+    const keyStyle = {
+        fontWeight: "bold",
+        textAlign: "left",
+        paddingRight: "0.5em"
+    }
+    const valueStyle = {
+        textAlign: "right"
+    }
+    const unitStyle = {
+        textAlign: "left"
+    }
+
+    const freqLabel = formatFrequency(freq, false);
+    const gainLabel = formatGain(gain, false);
+    const qLabel = formatQ(q);
+
+    const freqUnit = freq >= 999.5 ? "kHz" : "Hz";
+    const gainUnit = "dB";
+    const qUnit = "";
+
+    return {
+        tooltipX,
+        tooltipY,
+        tooltipContent: (<>
+            <table>
+                <tbody>
+                    <tr><td style={keyStyle}>Freq:</td><td style={valueStyle}>{freqLabel}</td><td style={unitStyle}>{freqUnit}</td></tr>
+                    <tr><td style={keyStyle}>Gain:</td><td style={valueStyle}>{gainLabel}</td><td style={unitStyle}>{gainUnit}</td></tr>
+                    <tr><td style={keyStyle}>Q:</td><td style={valueStyle}>{qLabel}</td><td style={unitStyle}>{qUnit}</td></tr>
+                </tbody>
+            </table>
+        </>)
+    }
 }
 
 function range(from, to) {

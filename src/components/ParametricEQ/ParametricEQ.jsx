@@ -1,16 +1,18 @@
 import './ParametricEq.css';
 import { clamped, linearScale, logarithmicScale, uiConverter } from '../../scales/scales';
 import * as eqtils from '../EqCommon/eqtils';
-import { useDragXY, useMouseDown } from '../hooks/gestureHandler';
-import { useEffect, useRef, useState } from 'react';
+import { useDragXY, useMouseDown, useMouseUp } from '../hooks/gestureHandler';
+import { createRef, useEffect, useRef, useState } from 'react';
 import Scale from '../Scale/Scale';
 import ParametricEqGraph from './ParametricEqGraph';
 import DivContext from '../divContext';
+import Tooltip from '../Tooltip/Tooltip';
 
 function ParametricEQ(props) {
 
     const divRef = useRef();
     const [div, setDiv] = useState(null);
+    const [touched, setTouched] = useState(null);
 
     useEffect(() => {
         setDiv(divRef.current);
@@ -46,9 +48,18 @@ function ParametricEQ(props) {
     const onMouseDown = (x, y) => {
         const band = eqtils.findClosestBand(eq, x, y, 0, width, 0, height);
         eq.activeBand = band;
+        setTouched(true);
         onInput(eq);
     };
     useMouseDown(divRef, onMouseDown);
+
+    const onMouseUp = (x, y) => {
+        const band = eqtils.findClosestBand(eq, x, y, 0, width, 0, height);
+        eq.activeBand = band;
+        setTouched(false);
+        onInput(eq);
+    };
+    useMouseUp(divRef, onMouseUp);
 
     const onDrag = (newFrequency, newGain) => {
         let band = eq.bands[eq.activeBand];
@@ -65,6 +76,10 @@ function ParametricEQ(props) {
     const majorGainTickMarks = eqtils.majorGainTickMarks(eq);
     const minorGainTickMarks = eqtils.minorGainTickMarks(eq);
 
+    const tooltipRef = useRef(null);
+    const { tooltipX, tooltipY, tooltipContent } = eqtils.tooltip(tooltipRef, eq, { x, y, width, height });
+    const visibility = touched ? "visible" : "hidden";
+
     return (
         <div className="parametric-eq" ref={divRef}>
             <DivContext.Provider value={div}>
@@ -73,6 +88,9 @@ function ParametricEQ(props) {
                     scaleY={gainScale} majorTickMarksY={majorGainTickMarks} minorTickMarksY={minorGainTickMarks}
                 />
                 <ParametricEqGraph eq={eq} minimal={false} />
+                <Tooltip x={tooltipX} y={tooltipY} ref={tooltipRef} visibility={visibility}>
+                    {tooltipContent}
+                </Tooltip>
             </DivContext.Provider>
         </div>
     );

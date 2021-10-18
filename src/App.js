@@ -122,6 +122,8 @@ function App() {
       <div className="App" style={{
         width: "75%",
         margin: "0 auto",
+        marginTop: "2em",
+        marginBottom: "2em",
         left: "50%"
       }}>
         <ParametricEQ

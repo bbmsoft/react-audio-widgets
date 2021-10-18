@@ -163,7 +163,7 @@ export function renderEq(eq, ctx, bounds, minimal, style) {
         }
     });
 
-    const ys = sum?.map(g => gainScale.convertTo(yScale, g)) || [];
+    const ys = sum?.map(g => gainScale.convertTo(yScale, g) + 0.5) || [];
     drawSum(ctx, xs, ys, y0, style.sumStroke, style.bandStroke);
 
     ctx.restore();
@@ -237,7 +237,7 @@ export function tooltip(tooltipRef, eq, bounds) {
 
 function range(from, to) {
     const array = [];
-    for (let i = from; i < to; i++) {
+    for (let i = from; i <= to; i++) {
         array.push(i);
     }
     return array;

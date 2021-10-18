@@ -113,11 +113,8 @@ function App() {
     }
   }
 
-  const vw = document.documentElement.clientWidth;
-
-
   return (
-    <Canvas id="root-canvas" width={vw}>
+    <Canvas id="root-canvas">
 
       <div className="App" style={{
         width: "75%",

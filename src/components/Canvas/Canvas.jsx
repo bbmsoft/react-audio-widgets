@@ -20,13 +20,15 @@ function Canvas(props) {
         });
     }, []);
 
+    const docWidth = document.body.clientWidth;
     const docHeight = document.body.clientHeight;
+
     const ratio = Math.ceil(window.devicePixelRatio);
-    const width = props.width * ratio;
+    const width = docWidth * ratio;
     const height = docHeight * ratio;
     const id = props.id;
     const style = {
-        width: `${props.width}px`,
+        width: `${docWidth}px`,
         height: `${docHeight}px`
     };
 

@@ -38,6 +38,7 @@ export function useMouseUp(elementRef, callback) {
 export function useDragX(elementRef, value, callback, converter) {
 
     const handlerRef = useRef(null);
+    const upListenerRef = useRef(null);
     const element = elementRef.current;
 
     if (!element) {
@@ -48,13 +49,14 @@ export function useDragX(elementRef, value, callback, converter) {
     handlerRef.current = { ...gestureHandler, element, value, callback, converter };
 
     if (callback && !gestureHandler) {
-        watchDragX(element, handlerRef);
+        watchDragX(element, handlerRef, upListenerRef);
     }
 }
 
 export function useDragY(elementRef, value, callback, converter) {
 
     const handlerRef = useRef(null);
+    const upListenerRef = useRef(null);
     const element = elementRef.current;
 
     if (!element) {
@@ -65,13 +67,14 @@ export function useDragY(elementRef, value, callback, converter) {
     handlerRef.current = { ...gestureHandler, element, value, callback, converter };
 
     if (callback && !gestureHandler) {
-        watchDragY(element, handlerRef);
+        watchDragY(element, handlerRef, upListenerRef);
     }
 }
 
 export function useDragXY(elementRef, values, callback, converters) {
 
     const handlerRef = useRef(null);
+    const upListenerRef = useRef(null);
     const element = elementRef.current;
 
     if (!element) {
@@ -82,13 +85,18 @@ export function useDragXY(elementRef, values, callback, converters) {
     handlerRef.current = { ...gestureHandler, element, values, callback, converters };
 
     if (callback && !gestureHandler) {
-        watchDragXY(element, handlerRef);
+        watchDragXY(element, handlerRef, upListenerRef);
     }
 }
 
 function watchMouseDown(element, handlerRef) {
 
     const listener = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
         const { callback } = handlerRef.current;
 
         const x = e.offsetX;
@@ -103,6 +111,10 @@ function watchMouseDown(element, handlerRef) {
 function watchMouseUp(element, handlerRef, upListenerRef) {
 
     const upListener = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
 
         if (upListenerRef.current) {
             window.removeEventListener("mouseup", upListenerRef.current);
@@ -119,15 +131,25 @@ function watchMouseUp(element, handlerRef, upListenerRef) {
     upListenerRef.current = upListener;
 
     const downListener = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
         window.addEventListener("mouseup", upListener);
     }
 
     element.addEventListener("mousedown", downListener);
 }
 
-function watchDragX(element, handlerRef) {
+function watchDragX(element, handlerRef, upListenerRef) {
 
     const onMouseMove = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
         const gestureHandler = handlerRef.current;
         const { callback, converter, dragStartXOffset } = gestureHandler;
         const dragX = e.pageX;
@@ -137,27 +159,49 @@ function watchDragX(element, handlerRef) {
         e.preventDefault();
     };
 
+    const onMouseUp = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
+        if (upListenerRef.current) {
+            window.removeEventListener("mouseup", upListenerRef.current);
+        }
+
+        window.removeEventListener("mousemove", onMouseMove);
+        e.preventDefault();
+    };
+
+    upListenerRef.current = onMouseUp;
+
     const onMouseDown = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
         const gestureHandler = handlerRef.current;
         const { converter, value } = gestureHandler;
         const dragStartX = e.pageX;
         const dragStartValueX = converter ? converter.toUiCoordinate(value) : value;
         gestureHandler.dragStartXOffset = dragStartX - dragStartValueX;
         window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
         e.preventDefault();
     }
-    const onMouseUp = e => {
-        window.removeEventListener("mousemove", onMouseMove);
-        e.preventDefault();
-    };
 
-    window.addEventListener("mouseup", onMouseUp);
     element.addEventListener("mousedown", onMouseDown);
 }
 
-function watchDragY(element, handlerRef) {
+function watchDragY(element, handlerRef, upListenerRef) {
 
     const onMouseMove = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
         const gestureHandler = handlerRef.current;
         const { callback, converter, dragStartYOffset } = gestureHandler;
         const dragY = e.pageY;
@@ -167,27 +211,47 @@ function watchDragY(element, handlerRef) {
         e.preventDefault();
     };
 
+    const onMouseUp = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
+        if (upListenerRef.current) {
+            window.removeEventListener("mouseup", upListenerRef.current);
+        }
+
+        window.removeEventListener("mousemove", onMouseMove);
+        e.preventDefault();
+    };
+
     const onMouseDown = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
         const gestureHandler = handlerRef.current;
         const { value, converter } = gestureHandler;
         const dragStartY = e.pageY;
         const dragStartValueY = converter ? converter.toUiCoordinate(value) : value;
         gestureHandler.dragStartYOffset = dragStartY - dragStartValueY;
         window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
         e.preventDefault();
     }
-    const onMouseUp = e => {
-        window.removeEventListener("mousemove", onMouseMove);
-        e.preventDefault();
-    };
 
-    window.addEventListener("mouseup", onMouseUp);
     element.addEventListener("mousedown", onMouseDown);
 }
 
-function watchDragXY(element, handlerRef) {
+function watchDragXY(element, handlerRef, upListenerRef) {
 
     const onMouseMove = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
         const gestureHandler = handlerRef.current;
         const { callback, converters, dragStartXOffset, dragStartYOffset } = gestureHandler;
         const [converterX, converterY] = converters;
@@ -201,7 +265,26 @@ function watchDragXY(element, handlerRef) {
         e.preventDefault();
     };
 
+    const onMouseUp = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
+        if (upListenerRef.current) {
+            window.removeEventListener("mouseup", upListenerRef.current);
+        }
+
+        window.removeEventListener("mousemove", onMouseMove);
+        e.preventDefault();
+    };
+
     const onMouseDown = e => {
+
+        if (e.button !== 0) {
+            return;
+        }
+
         const gestureHandler = handlerRef.current;
         const { converters } = gestureHandler;
         const [converterX, converterY] = converters;
@@ -214,13 +297,9 @@ function watchDragXY(element, handlerRef) {
         gestureHandler.dragStartXOffset = dragStartX - dragStartValueX;
         gestureHandler.dragStartYOffset = dragStartY - dragStartValueY;
         window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
         e.preventDefault();
     }
-    const onMouseUp = e => {
-        window.removeEventListener("mousemove", onMouseMove);
-        e.preventDefault();
-    };
 
-    window.addEventListener("mouseup", onMouseUp);
     element.addEventListener("mousedown", onMouseDown);
 }

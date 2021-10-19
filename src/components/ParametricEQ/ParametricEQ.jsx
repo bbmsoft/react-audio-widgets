@@ -1,6 +1,6 @@
 import './ParametricEq.css';
 import { clamped, linearScale, logarithmicScale, uiConverter } from '../../scales/scales';
-import * as eqtils from '../EqCommon/eqtils';
+import * as eqtils from './eqtils';
 import { useDragXY, useMouseDown, useMouseUp } from '../hooks/gestureHandler';
 import { createRef, useEffect, useRef, useState } from 'react';
 import Scale from '../Scale/Scale';

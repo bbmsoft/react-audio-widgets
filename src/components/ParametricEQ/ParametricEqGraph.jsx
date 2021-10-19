@@ -1,5 +1,5 @@
 import { CanvasContext } from '../Canvas/Canvas';
-import * as eqtils from '../EqCommon/eqtils';
+import * as eqtils from './eqtils';
 import { useContext } from 'react';
 import './ParametricEqThumbnail.css';
 import DivContext from '../divContext';

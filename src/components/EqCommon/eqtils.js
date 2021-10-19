@@ -179,10 +179,13 @@ export function tooltip(tooltipRef, eq, bounds) {
     const yMin = y;
     const yMax = y + height;
     const maxBandCircleRadius = Math.min(Math.min(width, height) / 5, Math.max(width, height) / 20);
+    const minBandCircleRadius = maxBandCircleRadius / 5;
     const frequencyScale = logarithmicScale(eq.minFreq, eq.maxFreq);
     const gainScale = linearScale(eq.minGain, eq.maxGain);
+    const qScale = logarithmicScale(eq.minQ, eq.maxQ);
     const xScale = linearScale(xMin, xMax);
     const yScale = linearScale(yMin, yMax, true);
+    const circleScale = linearScale(minBandCircleRadius, maxBandCircleRadius, true);
 
     const activeBand = eq.activeBand;
     const band = eq.bands[activeBand];
@@ -194,9 +197,11 @@ export function tooltip(tooltipRef, eq, bounds) {
     const tooltipWidth = tooltipBounds ? tooltipBounds.width : 0;
     const tooltipHeight = tooltipBounds ? tooltipBounds.height : 0;
 
-    const tooltipRawY = gainScale.convertTo(yScale, gain) - tooltipHeight - (maxBandCircleRadius / 2);
+    const radius = qScale.convertTo(circleScale, q);
+
+    const tooltipRawY = gainScale.convertTo(yScale, gain) - tooltipHeight - (radius + 4);
     const tooltipY = Math.min(Math.max(8 + window.scrollY, tooltipRawY), window.innerHeight + window.scrollY - 8);
-    const yOffset = Math.min((tooltipWidth / tooltipHeight) * (tooltipY - tooltipRawY), (tooltipWidth + maxBandCircleRadius) / 2);
+    const yOffset = Math.min((tooltipWidth / tooltipHeight) * (tooltipY - tooltipRawY), tooltipWidth / 2 + (radius + 4));
     const tooltipRawX = frequencyScale.convertTo(xScale, freq) - tooltipWidth / 2;
     const tooltipX = Math.min(Math.max(8, tooltipRawX - yOffset), window.innerWidth - 8);
 

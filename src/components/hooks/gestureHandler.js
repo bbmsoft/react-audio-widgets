@@ -20,6 +20,7 @@ export function useMouseDown(elementRef, callback) {
 export function useMouseUp(elementRef, callback) {
 
     const handlerRef = useRef(null);
+    const upListenerRef = useRef(null);
     const element = elementRef.current;
 
     if (!element) {
@@ -30,7 +31,7 @@ export function useMouseUp(elementRef, callback) {
     handlerRef.current = { ...gestureHandler, element, callback };
 
     if (callback && !gestureHandler) {
-        watchMouseUp(element, handlerRef);
+        watchMouseUp(element, handlerRef, upListenerRef);
     }
 }
 
@@ -99,9 +100,14 @@ function watchMouseDown(element, handlerRef) {
     element.addEventListener("mousedown", listener);
 }
 
-function watchMouseUp(element, handlerRef) {
+function watchMouseUp(element, handlerRef, upListenerRef) {
 
-    const listener = e => {
+    const upListener = e => {
+
+        if (upListenerRef.current) {
+            window.removeEventListener("mouseup", upListenerRef.current);
+        }
+
         const { callback } = handlerRef.current;
 
         const x = e.offsetX;
@@ -110,7 +116,13 @@ function watchMouseUp(element, handlerRef) {
         e.preventDefault();
     }
 
-    element.addEventListener("mouseup", listener);
+    upListenerRef.current = upListener;
+
+    const downListener = e => {
+        window.addEventListener("mouseup", upListener);
+    }
+
+    element.addEventListener("mousedown", downListener);
 }
 
 function watchDragX(element, handlerRef) {

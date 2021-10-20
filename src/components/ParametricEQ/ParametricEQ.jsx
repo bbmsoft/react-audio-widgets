@@ -72,6 +72,9 @@ function ParametricEQ(props) {
     useDragXY(divRef, [freq, gain], onDrag, [xConverter, yConverter]);
 
     const onContextMenu = (x, y) => {
+        if (touched) {
+            return;
+        }
         const closest = eqtils.findClosestBand(eq, x, y, 0, width, 0, height);
         const band = eq.bands[closest];
         if (band) {

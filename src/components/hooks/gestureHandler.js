@@ -38,7 +38,8 @@ export function useMouseUp(elementRef, callback) {
 export function useDragX(elementRef, value, callback, converter) {
 
     const handlerRef = useRef(null);
-    const upListenerRef = useRef(null);
+    const mouseUpListenerRef = useRef(null);
+    const touchUpListenerRef = useRef(null);
     const element = elementRef.current;
 
     if (!element) {
@@ -49,7 +50,7 @@ export function useDragX(elementRef, value, callback, converter) {
     handlerRef.current = { ...gestureHandler, element, value, callback, converter };
 
     if (callback && !gestureHandler) {
-        watchDragX(element, handlerRef, upListenerRef);
+        watchDragX(element, handlerRef, mouseUpListenerRef, touchUpListenerRef);
     }
 }
 
@@ -74,7 +75,8 @@ export function useDragY(elementRef, value, callback, converter) {
 export function useDragXY(elementRef, values, callback, converters) {
 
     const handlerRef = useRef(null);
-    const upListenerRef = useRef(null);
+    const mouseUpListenerRef = useRef(null);
+    const touchUpListenerRef = useRef(null);
     const element = elementRef.current;
 
     if (!element) {
@@ -85,7 +87,7 @@ export function useDragXY(elementRef, values, callback, converters) {
     handlerRef.current = { ...gestureHandler, element, values, callback, converters };
 
     if (callback && !gestureHandler) {
-        watchDragXY(element, handlerRef, upListenerRef);
+        watchDragXY(element, handlerRef, mouseUpListenerRef, touchUpListenerRef);
     }
 }
 
@@ -108,7 +110,7 @@ export function useContextMenu(elementRef, callback) {
 
 function watchMouseDown(element, handlerRef) {
 
-    const listener = e => {
+    const mouseListener = e => {
 
         if (e.button !== 0) {
             return;
@@ -122,7 +124,24 @@ function watchMouseDown(element, handlerRef) {
         e.preventDefault();
     }
 
-    element.addEventListener("mousedown", listener);
+    const touchListener = e => {
+
+        if (e.changedTouches.length !== 1) {
+            return;
+        }
+
+        const { callback } = handlerRef.current;
+        const touch = e.changedTouches[0];
+
+        const x = touch.clientX;
+        const y = touch.clientY;
+        const targetBounds = e.target.getBoundingClientRect();
+        callback(x - targetBounds.x, y - targetBounds.y);
+        e.preventDefault();
+    }
+
+    element.addEventListener("mousedown", mouseListener);
+    element.addEventListener("touchstart", touchListener);
 }
 
 function watchMouseUp(element, handlerRef, upListenerRef) {
@@ -145,6 +164,22 @@ function watchMouseUp(element, handlerRef, upListenerRef) {
         e.preventDefault();
     }
 
+    const touchListener = e => {
+
+        if (e.changedTouches.length !== 1) {
+            return;
+        }
+
+        const { callback } = handlerRef.current;
+        const touch = e.changedTouches[0];
+
+        const x = touch.clientX;
+        const y = touch.clientY;
+        const targetBounds = e.target.getBoundingClientRect();
+        callback(x - targetBounds.x, y - targetBounds.y);
+        e.preventDefault();
+    }
+
     upListenerRef.current = upListener;
 
     const downListener = e => {
@@ -157,9 +192,10 @@ function watchMouseUp(element, handlerRef, upListenerRef) {
     }
 
     element.addEventListener("mousedown", downListener);
+    element.addEventListener("touchend", touchListener);
 }
 
-function watchDragX(element, handlerRef, upListenerRef) {
+function watchDragX(element, handlerRef, mouseUpListenerRef, touchUpListenerRef) {
 
     const onMouseMove = e => {
 
@@ -182,15 +218,15 @@ function watchDragX(element, handlerRef, upListenerRef) {
             return;
         }
 
-        if (upListenerRef.current) {
-            window.removeEventListener("mouseup", upListenerRef.current);
+        if (mouseUpListenerRef.current) {
+            window.removeEventListener("mouseup", mouseUpListenerRef.current);
         }
 
         window.removeEventListener("mousemove", onMouseMove);
         e.preventDefault();
     };
 
-    upListenerRef.current = onMouseUp;
+    mouseUpListenerRef.current = onMouseUp;
 
     const onMouseDown = e => {
 
@@ -208,7 +244,57 @@ function watchDragX(element, handlerRef, upListenerRef) {
         e.preventDefault();
     }
 
+    const onTouchMove = e => {
+
+        if (e.changedTouches.length !== 1) {
+            return;
+        }
+
+        const gestureHandler = handlerRef.current;
+        const touch = e.changedTouches[0];
+        const { callback, converter, dragStartXOffset } = gestureHandler;
+        const dragX = touch.pageX;
+        const valueX = dragX - dragStartXOffset;
+        const newValue = converter ? converter.toValue(valueX) : valueX;
+        callback(newValue);
+        e.preventDefault();
+    };
+
+    const onTouchUp = e => {
+
+        if (e.changedTouches.length !== 1) {
+            return;
+        }
+
+        if (touchUpListenerRef.current) {
+            window.removeEventListener("touchend", touchUpListenerRef.current);
+        }
+
+        window.removeEventListener("touchmove", onTouchMove);
+        e.preventDefault();
+    };
+
+    touchUpListenerRef.current = onTouchUp;
+
+    const onTouchDown = e => {
+
+        if (e.changedTouches.length !== 1) {
+            return;
+        }
+
+        const gestureHandler = handlerRef.current;
+        const touch = e.changedTouches[0];
+        const { converter, value } = gestureHandler;
+        const dragStartX = touch.pageX;
+        const dragStartValueX = converter ? converter.toUiCoordinate(value) : value;
+        gestureHandler.dragStartXOffset = dragStartX - dragStartValueX;
+        window.addEventListener("touchmove", onTouchMove);
+        window.addEventListener("touchend", onTouchUp);
+        e.preventDefault();
+    }
+
     element.addEventListener("mousedown", onMouseDown);
+    element.addEventListener("touchstart", onTouchDown);
 }
 
 function watchDragY(element, handlerRef, upListenerRef) {
@@ -261,7 +347,7 @@ function watchDragY(element, handlerRef, upListenerRef) {
     element.addEventListener("mousedown", onMouseDown);
 }
 
-function watchDragXY(element, handlerRef, upListenerRef) {
+function watchDragXY(element, handlerRef, mouseUpListenerRef, touchUpListenerRef) {
 
     const onMouseMove = e => {
 
@@ -288,8 +374,8 @@ function watchDragXY(element, handlerRef, upListenerRef) {
             return;
         }
 
-        if (upListenerRef.current) {
-            window.removeEventListener("mouseup", upListenerRef.current);
+        if (mouseUpListenerRef.current) {
+            window.removeEventListener("mouseup", mouseUpListenerRef.current);
         }
 
         window.removeEventListener("mousemove", onMouseMove);
@@ -318,7 +404,64 @@ function watchDragXY(element, handlerRef, upListenerRef) {
         e.preventDefault();
     }
 
+    const onTouchMove = e => {
+
+        if (e.changedTouches.length !== 1) {
+            return;
+        }
+
+        const gestureHandler = handlerRef.current;
+        const touch = e.changedTouches[0];
+        const { callback, converters, dragStartXOffset, dragStartYOffset } = gestureHandler;
+        const [converterX, converterY] = converters;
+        const dragX = touch.pageX;
+        const dragY = touch.pageY;
+        const valueX = dragX - dragStartXOffset;
+        const valueY = dragY - dragStartYOffset;
+        const convertedX = converterX ? converterX.toValue(valueX) : valueX;
+        const convertedY = converterY ? converterY.toValue(valueY) : valueY;
+        callback(convertedX, convertedY);
+    };
+
+    const onTouchUp = e => {
+
+        if (e.changedTouches.length !== 1) {
+            return;
+        }
+
+        if (touchUpListenerRef.current) {
+            window.removeEventListener("touchend", touchUpListenerRef.current);
+        }
+
+        window.removeEventListener("touchmove", onTouchMove);
+        e.preventDefault();
+    };
+
+    const onTouchDown = e => {
+
+        if (e.changedTouches.length !== 1) {
+            return;
+        }
+
+        const gestureHandler = handlerRef.current;
+        const touch = e.changedTouches[0];
+        const { converters } = gestureHandler;
+        const [converterX, converterY] = converters;
+
+        const [valueX, valueY] = gestureHandler.values;
+        const dragStartX = touch.pageX;
+        const dragStartY = touch.pageY;
+        const dragStartValueX = converterX ? converterX.toUiCoordinate(valueX) : valueX;
+        const dragStartValueY = converterY ? converterY.toUiCoordinate(valueY) : valueY;
+        gestureHandler.dragStartXOffset = dragStartX - dragStartValueX;
+        gestureHandler.dragStartYOffset = dragStartY - dragStartValueY;
+        window.addEventListener("touchmove", onTouchMove);
+        window.addEventListener("touchend", onTouchUp);
+        e.preventDefault();
+    }
+
     element.addEventListener("mousedown", onMouseDown);
+    element.addEventListener("touchstart", onTouchDown);
 }
 
 function watchContextMenu(element, handlerRef) {

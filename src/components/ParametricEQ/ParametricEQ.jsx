@@ -1,8 +1,8 @@
 import './ParametricEq.css';
 import { clamped, linearScale, logarithmicScale, uiConverter } from '../../scales/scales';
 import * as eqtils from './eqtils';
-import { useDragXY, useMouseDown, useMouseUp } from '../hooks/gestureHandler';
-import { createRef, useEffect, useRef, useState } from 'react';
+import { useDragXY, useMouseDown, useMouseUp, useContextMenu } from '../hooks/gestureHandler';
+import { useEffect, useRef, useState } from 'react';
 import Scale from '../Scale/Scale';
 import ParametricEqGraph from './ParametricEqGraph';
 import DivContext from '../divContext';
@@ -70,6 +70,16 @@ function ParametricEQ(props) {
         }
     };
     useDragXY(divRef, [freq, gain], onDrag, [xConverter, yConverter]);
+
+    const onContextMenu = (x, y) => {
+        const closest = eqtils.findClosestBand(eq, x, y, 0, width, 0, height);
+        const band = eq.bands[closest];
+        if (band) {
+            band.active = !band.active;
+            onInput(eq);
+        }
+    }
+    useContextMenu(divRef, onContextMenu);
 
     const majorFrequencyTickMarks = eqtils.majorFrequencyTickMarks(eq);
     const minorFrequencyTickMarks = eqtils.minorFrequencyTickMarks(eq);

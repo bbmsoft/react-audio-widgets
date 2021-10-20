@@ -150,18 +150,24 @@ export function renderEq(eq, ctx, bounds, minimal, style) {
 
     let sum;
 
-    eq.bands.forEach(b => {
+    eq.bands.filter(b => b.active).forEach(b => {
         const gains = computeBandCurve(b, frequencies);
         sum = add(sum, gains);
         if (!minimal) {
             const ys = gains.map(g => gainScale.convertTo(yScale, g));
             drawBandCurve(ctx, xs, ys, style.bandStroke);
+        }
+    });
+
+    if (!minimal) {
+        eq.bands.forEach(b => {
             const radius = qScale.convertTo(circleScale, b.q);
             const bx = frequencyScale.convertTo(xScale, b.frequency);
             const by = gainScale.convertTo(yScale, b.gain);
             drawBandCircle(ctx, bx, by, radius, style.bandStroke);
-        }
-    });
+
+        });
+    }
 
     const ys = sum?.map(g => gainScale.convertTo(yScale, g) + 0.5) || [];
     drawSum(ctx, xs, ys, y0, style.sumStroke, style.bandStroke);

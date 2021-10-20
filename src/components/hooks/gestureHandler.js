@@ -89,6 +89,23 @@ export function useDragXY(elementRef, values, callback, converters) {
     }
 }
 
+export function useContextMenu(elementRef, callback) {
+
+    const handlerRef = useRef(null);
+    const element = elementRef.current;
+
+    if (!element) {
+        return;
+    }
+
+    const gestureHandler = handlerRef.current;
+    handlerRef.current = { ...gestureHandler, element, callback };
+
+    if (callback && !gestureHandler) {
+        watchContextMenu(element, handlerRef);
+    }
+}
+
 function watchMouseDown(element, handlerRef) {
 
     const listener = e => {
@@ -302,4 +319,19 @@ function watchDragXY(element, handlerRef, upListenerRef) {
     }
 
     element.addEventListener("mousedown", onMouseDown);
+}
+
+function watchContextMenu(element, handlerRef) {
+
+    const listener = e => {
+
+        const { callback } = handlerRef.current;
+
+        const x = e.offsetX;
+        const y = e.offsetY;
+        callback(x, y);
+        e.preventDefault();
+    }
+
+    element.addEventListener("contextmenu", listener);
 }
